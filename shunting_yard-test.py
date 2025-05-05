@@ -18,11 +18,15 @@ class TestCalculation(unittest.TestCase):
             with self.subTest(d=d):
                 self.assertEqual(shunting_yard.compute(d[0]), d[1])
 
-    def tesOperatorPrecedence(self):
+    def testOperatorPrecedence(self):
         for d in _getCompoundCalculationData():
             with self.subTest(d=d):
                 self.assertEqual(shunting_yard.compute(d[0]), d[1])
 
+    def testOtherCalcs(self):
+        for d in _getOtherCalculationData():
+            with self.subTest(d=d):
+                self.assertEqual(shunting_yard.compute(d[0]), d[1])
 
 def _isIllegalExponentiation(op, value_pair):
     return op == shunting_yard.Operator.EXPONENTIATION and value_pair[0] < 0 and isinstance(value_pair[1], float)
