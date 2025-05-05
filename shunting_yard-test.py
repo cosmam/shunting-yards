@@ -1,34 +1,15 @@
 #!/usr/bin/python3
 
 import itertools
-import math
 import shunting_yard
 import unittest
 
-from enum import Enum
 
-class Operator(Enum):
-    ADDITION = 1
-    SUBTRACTION = 2
-    MULTIPLICATION = 3
-    DIVISION = 4
-    EXPONENTIATION = 5
-
-
-
-base_operators = [Operator.ADDITION, Operator.SUBTRACTION, Operator.MULTIPLICATION, Operator.DIVISION, Operator.EXPONENTIATION]
-operator_precedence = {Operator.ADDITION: 1,
-                       Operator.SUBTRACTION: 1,
-                       Operator.MULTIPLICATION: 2,
-                       Operator.DIVISION: 2,
-                       Operator.EXPONENTIATION: 3}
-
-operator_chars = {Operator.ADDITION: "+",
-                  Operator.SUBTRACTION: "-",
-                  Operator.MULTIPLICATION: "*",
-                  Operator.DIVISION: "/",
-                  Operator.EXPONENTIATION: "^"}
-
+operator_chars = {shunting_yard.Operator.ADDITION: "+",
+                  shunting_yard.Operator.SUBTRACTION: "-",
+                  shunting_yard.Operator.MULTIPLICATION: "*",
+                  shunting_yard.Operator.DIVISION: "/",
+                  shunting_yard.Operator.EXPONENTIATION: "^"}
 
 class TestCalculation(unittest.TestCase):
 
@@ -37,37 +18,14 @@ class TestCalculation(unittest.TestCase):
             with self.subTest(d=d):
                 self.assertEqual(shunting_yard.compute(d[0]), d[1])
 
-
-def _add(a, b):
-    return a + b
-
-
-def _subtract(a, b):
-    return a - b
-
-
-def _multiply(a, b):
-    return a * b
-
-
-def _divide(a, b):
-    return a / b
-
-
-def _exp(a, b):
-    print(a, b)
-    return a ** b
-
-
-operator_funcs = {Operator.ADDITION: _add,
-                  Operator.SUBTRACTION: _subtract,
-                  Operator.MULTIPLICATION: _multiply,
-                  Operator.DIVISION: _divide,
-                  Operator.EXPONENTIATION: _exp}
+    def tesOperatorPrecedence(self):
+        for d in _getCompoundCalculationData():
+            with self.subTest(d=d):
+                self.assertEqual(shunting_yard.compute(d[0]), d[1])
 
 
 def _isIllegalExponentiation(op, value_pair):
-    return op == Operator.EXPONENTIATION and value_pair[0] < 0 and isinstance(value_pair[1], float)
+    return op == shunting_yard.Operator.EXPONENTIATION and value_pair[0] < 0 and isinstance(value_pair[1], float)
 
 
 def _pareOperations(operations):
@@ -100,9 +58,9 @@ def _getSimpleCalculationsData():
     data = []
     raw_values = [1, 4, 21, 17, -2, -8, -13, -22, 2.1, 3.12513, 10.910, 12.18913, -2.0, -6.123, -20.123, -18.1230192]
     value_pairs = itertools.product(raw_values, raw_values)
-    for op, vals in _pareOperations(list(itertools.product(base_operators, value_pairs))):
+    for op, vals in _pareOperations(list(itertools.product(shunting_yard.base_operators, value_pairs))):
         for op_text in _getOperators(op):
-            result = operator_funcs[op](vals[0], vals[1])
+            result = shunting_yard.operator_funcs[op](vals[0], vals[1])
             text = str(vals[0]) + op_text + str(vals[1])
             data.append((text, result))
     return data
@@ -112,15 +70,14 @@ def _getCompoundCalculationData():
     data = []
     raw_values = [1, 4, 10, -2, -8, -13, 2.1, 3.12513, 10.910, 12.18913, -2.0, -6.123, -11.1230192]
     value_triplets = list(itertools.product(raw_values, raw_values, raw_values))
-    op_pairs = list(itertools.product(base_operators, base_operators))
+    op_pairs = list(itertools.product(shunting_yard.base_operators, shunting_yard.base_operators))
     for ops, vals in _pareCompoundOperations(list(itertools.product(op_pairs, value_triplets))):
         for op_texts in list(itertools.product(_getOperators(ops[0]), _getOperators(ops[1]))):
             result = None
-            print(vals)
-            if operator_precedence[ops[0]] < operator_precedence[ops[1]]:
-                result = operator_funcs[ops[0]](vals[0], operator_funcs[ops[1]](vals[1], vals[2]))
+            if shunting_yard.operator_precedence[ops[0]] < shunting_yard.operator_precedence[ops[1]]:
+                result = shunting_yard.operator_funcs[ops[0]](vals[0], shunting_yard.operator_funcs[ops[1]](vals[1], vals[2]))
             else:
-                result = operator_funcs[ops[1]](operator_funcs[ops[0]](vals[0], vals[1]), vals[2])
+                result = shunting_yard.operator_funcs[ops[1]](shunting_yard.operator_funcs[ops[0]](vals[0], vals[1]), vals[2])
             text = str(vals[0]) + op_texts[0] + str(vals[1]) + op_texts[1] + str(vals[2])
             data.append((text, result))
     return data
