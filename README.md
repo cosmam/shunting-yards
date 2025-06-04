@@ -25,3 +25,9 @@ Should allow for binary and unary functions.
 ### Mistakes
 
 Anything not in the above.
+
+## Super-Mega-Extra Stretch Goal
+
+Support equality operators. Evaluate both sides of the equation, then the operator, and return True or False
+
+Operators: ==, !=, /=, <=, >=, <, >, ~=
