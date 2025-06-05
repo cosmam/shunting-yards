@@ -46,7 +46,7 @@ Testing will be driven by files with a comma-separated string and number (except
 
 Valid number format is: [A][.B][C][D]. At least one of A and B is required; iIf C or D is defined, the other must be.
 
-A: Any valid string of numbers. 1, 123, 000001, 100000
-B: A period followed by a valid string of numbers
-C: Either 'e' or 'E'
-D: Optionally, a sign, followed by digits (decimal not allowed). so "00001", "+12", "-00001", "-123"
+* A: Any valid string of numbers. 1, 123, 000001, 100000
+* B: A period followed by a valid string of numbers
+* C: Either 'e' or 'E'
+* D: Optionally, a sign, followed by digits (decimal not allowed). so "00001", "+12", "-00001", "-123"
