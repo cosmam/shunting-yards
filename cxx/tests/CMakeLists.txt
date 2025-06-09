@@ -1,16 +1,17 @@
+set(PROJECT_NAME shunting_yard_test)
+
 enable_testing()
 
-set(SOURCES
-    ${CMAKE_CURRENT_LIST_DIR}/shunting_yard-test.cpp
+add_executable(
+    ${PROJECT_NAME}
     ${CMAKE_CURRENT_LIST_DIR}/tokenizer-test.cpp
 )
 
-add_executable(shunting_yard_test main.cpp ${SOURCES})
-
 target_link_libraries(
-  shunting_yard
-  GTest::gtest_main
+    ${PROJECT_NAME}
+    shunting_yard
+    GTest::gtest_main
 )
 
 include(GoogleTest)
-gtest_discover_tests(hello_test)
+gtest_discover_tests(${PROJECT_NAME})

@@ -2,6 +2,7 @@
 #define TOKENIZER_H
 
 #include <string>
+#include <vector>
 
 namespace Tokenizer {
 
@@ -18,9 +19,12 @@ namespace Tokenizer {
 
         std::string_view str;
         TokenType type;
+        int arity = 0;
     };
 
-    void initialize();
+    auto preprocess(std::string_view str) -> std::string;
+
+    auto tokenize(std::string_view str) -> std::vector<Token>;
 }
 
 #endif // TOKENIZER_H
