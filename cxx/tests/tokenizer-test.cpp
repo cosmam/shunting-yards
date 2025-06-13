@@ -1,6 +1,19 @@
 #include "../src/tokenizer.h"
 #include <gtest/gtest.h>
 
+#include <span>
+
+namespace {
+    auto toString(std::span<Tokenizer::Token> tokens) -> std::vector<std::string>
+    {
+        std::vector<std::string> strs;
+        for(auto && t : tokens) {
+            strs.push_back(std::string(t.str));
+        }
+        return strs;
+    }
+}
+
 class StringTransformSuite : public ::testing::TestWithParam<std::tuple<std::string, std::string>> {};
 
 INSTANTIATE_TEST_SUITE_P(PreprocessTest,
@@ -18,3 +31,12 @@ TEST_P(StringTransformSuite, TestTransforms)
 
     EXPECT_EQ(Tokenizer::preprocess(before), expected);
 };
+
+TEST(TokenizerTest, TestBasicTokenize)
+{
+    std::string input = "sin(2.10*3)^2";
+    std::vector<std::string> expected{"sin", "(", "2.10", "*", "3", ")", "^", "2"};
+    auto tokens = Tokenizer::tokenize(input);
+
+    EXPECT_EQ(toString(tokens), expected);
+}
