@@ -15,6 +15,7 @@ namespace {
                                                "tan", "ceil", "<", ">"};
 
     const std::unordered_set<char> Numeric_Tokens{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'e'};
+    const std::unordered_set<char> Skipped_Tokens{','};
     const std::unordered_set<std::string_view> Unknown_Arity_Tokens{Token_Names.at(2), Token_Names.at(3)};
 
     auto createMap() -> std::map<std::string_view, Tokenizer::Token>
@@ -90,18 +91,18 @@ namespace Tokenizer {
         size_t end = 0;
 
         while(end < str.size()) {
-            std::cout << end << std::endl;
             while(end < str.size() && Numeric_Tokens.contains(str.at(end))) {
                 end++;
             }
             if(end > start) {
-                std::cout << "Found number" << std::endl;
                 tokens.push_back(Token(str.substr(start, end-start), TokenType::Value));
                 start = end;
                 previous_token_valueish = true;
             }
+            while(end < str.size() && Skipped_Tokens.contains(str.at(end))) {
+                end++;
+            }
             for(auto && [name, token] : Tokens) {
-                std::cout << "Checking " << name << std::endl;
                 if((start + name.size()) < str.size() && name == str.substr(start, name.size())) {
                     tokens.push_back(token);
                     start += name.size();

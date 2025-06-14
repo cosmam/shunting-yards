@@ -40,3 +40,107 @@ TEST(TokenizerTest, TestBasicTokenize)
 
     EXPECT_EQ(toString(tokens), expected);
 }
+
+TEST(TokenizerTest, TestPlusArity1)
+{
+    std::string input = "+2";
+    auto tokens = Tokenizer::tokenize(input);
+
+    EXPECT_EQ(tokens.size(), 2);
+    EXPECT_EQ(tokens.front().str, "+");
+    EXPECT_EQ(tokens.front().arity, 1);
+}
+
+TEST(TokenizerTest, TestPlusArity2)
+{
+    std::string input = "2+2";
+    auto tokens = Tokenizer::tokenize(input);
+
+    EXPECT_EQ(tokens.size(), 3);
+    EXPECT_EQ(tokens.at(1).str, "+");
+    EXPECT_EQ(tokens.at(1).arity, 2);
+}
+
+TEST(TokenizerTest, TestPlusArity3)
+{
+    std::string input = ")+2";
+    auto tokens = Tokenizer::tokenize(input);
+
+    EXPECT_EQ(tokens.size(), 3);
+    EXPECT_EQ(tokens.at(1).str, "+");
+    EXPECT_EQ(tokens.at(1).arity, 2);
+}
+
+TEST(TokenizerTest, TestPlusArity4)
+{
+    std::string input = "(+2";
+    auto tokens = Tokenizer::tokenize(input);
+
+    EXPECT_EQ(tokens.size(), 3);
+    EXPECT_EQ(tokens.at(1).str, "+");
+    EXPECT_EQ(tokens.at(1).arity, 1);
+}
+
+TEST(TokenizerTest, TestPlusArity5)
+{
+    std::string input = "2++2";
+    auto tokens = Tokenizer::tokenize(input);
+
+    EXPECT_EQ(tokens.size(), 4);
+    EXPECT_EQ(tokens.at(1).str, "+");
+    EXPECT_EQ(tokens.at(1).arity, 2);
+    EXPECT_EQ(tokens.at(2).str, "+");
+    EXPECT_EQ(tokens.at(2).arity, 1);
+}
+
+TEST(TokenizerTest, TestMinusArity1)
+{
+    std::string input = "-2";
+    auto tokens = Tokenizer::tokenize(input);
+
+    EXPECT_EQ(tokens.size(), 2);
+    EXPECT_EQ(tokens.front().str, "-");
+    EXPECT_EQ(tokens.front().arity, 1);
+}
+
+TEST(TokenizerTest, TestMinusArity2)
+{
+    std::string input = "2-2";
+    auto tokens = Tokenizer::tokenize(input);
+
+    EXPECT_EQ(tokens.size(), 3);
+    EXPECT_EQ(tokens.at(1).str, "-");
+    EXPECT_EQ(tokens.at(1).arity, 2);
+}
+
+TEST(TokenizerTest, TestMinusArity3)
+{
+    std::string input = ")-2";
+    auto tokens = Tokenizer::tokenize(input);
+
+    EXPECT_EQ(tokens.size(), 3);
+    EXPECT_EQ(tokens.at(1).str, "-");
+    EXPECT_EQ(tokens.at(1).arity, 2);
+}
+
+TEST(TokenizerTest, TestMinusArity4)
+{
+    std::string input = "(-2";
+    auto tokens = Tokenizer::tokenize(input);
+
+    EXPECT_EQ(tokens.size(), 3);
+    EXPECT_EQ(tokens.at(1).str, "-");
+    EXPECT_EQ(tokens.at(1).arity, 1);
+}
+
+TEST(TokenizerTest, TestMinusArity5)
+{
+    std::string input = "2--2";
+    auto tokens = Tokenizer::tokenize(input);
+
+    EXPECT_EQ(tokens.size(), 4);
+    EXPECT_EQ(tokens.at(1).str, "-");
+    EXPECT_EQ(tokens.at(1).arity, 2);
+    EXPECT_EQ(tokens.at(2).str, "-");
+    EXPECT_EQ(tokens.at(2).arity, 1);
+}
