@@ -46,10 +46,6 @@ def _get_spaces(space_format):
     return [" " if Spaces.BEFORE in space_format else "", " " if Spaces.AFTER in space_format else ""]
 
 
-def _generate_integer():
-    return random.randrange(1, 200)
-
-
 def _generate_number(number_format):
     number = ""
     if NumberFormat.A in number_format:
@@ -59,7 +55,9 @@ def _generate_number(number_format):
     if NumberFormat.B0 in number_format:
         number = number + "0." + str(random.randrange(1, 200))
     if NumberFormat.C in number_format:
-        number = number + ("e" if random.randrange(1, 200) % 2 == 0 else "E") + str(random.randrange(-10, 10))
+        exponent = random.randrange(-10, 10)
+        sign = "+" if exponent > 0 and (random.randrange(1, 200) % 2 == 0) else ""
+        number = number + ("e" if random.randrange(1, 200) % 2 == 0 else "E") + sign + str(exponent)
     return number
 
 
