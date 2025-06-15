@@ -16,6 +16,7 @@ namespace {
 
     const std::unordered_set<char> Numeric_Tokens{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'e'};
     const std::unordered_set<char> Skipped_Tokens{','};
+    const std::unordered_set<char> Sign_Tokens{'-', '+'};
     const std::unordered_set<std::string_view> Unknown_Arity_Tokens{Token_Names.at(2), Token_Names.at(3)};
 
     auto createMap() -> std::map<std::string_view, Tokenizer::Token>
@@ -82,6 +83,11 @@ namespace Tokenizer {
         return s;
     }
 
+    auto isNumericSign(std::string_view s, size_t pos) -> bool
+    {
+        return (pos > 0 && Sign_Tokens.contains(s.at(pos)) && s.at(pos-1) == 'e');
+    }
+
     auto tokenize(std::string_view str) -> std::vector<Token>
     {
         std::vector<Token> tokens;
@@ -91,7 +97,7 @@ namespace Tokenizer {
         size_t end = 0;
 
         while(end < str.size()) {
-            while(end < str.size() && Numeric_Tokens.contains(str.at(end))) {
+            while(end < str.size() && (Numeric_Tokens.contains(str.at(end)) || isNumericSign(str, end))) {
                 end++;
             }
             if(end > start) {
@@ -102,9 +108,9 @@ namespace Tokenizer {
             while(end < str.size() && Skipped_Tokens.contains(str.at(end))) {
                 end++;
             }
-            for(auto && [name, token] : Tokens) {
-                if((start + name.size()) < str.size() && name == str.substr(start, name.size())) {
-                    tokens.push_back(token);
+            for(auto && name : Token_Names) {
+                if((start + name.size()) <= str.size() && name == str.substr(start, name.size())) {
+                    tokens.push_back(Tokens.at(name));
                     start += name.size();
                     end = start;
                     if(Unknown_Arity_Tokens.contains(name)) {

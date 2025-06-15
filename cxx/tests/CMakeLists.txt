@@ -14,4 +14,4 @@ target_link_libraries(
 )
 
 include(GoogleTest)
-gtest_discover_tests(${PROJECT_NAME})
+gtest_discover_tests(${PROJECT_NAME} PROPERTIES TEST_DISCOVERY_TIMEOUT 600)
