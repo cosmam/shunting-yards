@@ -65,7 +65,7 @@ def _generate_unary_operator(operator, operator_spaces, number_format, number_sp
     pieces = _get_spaces(operator_spaces) + _get_spaces(number_spaces)
     pieces.insert(1, operator)
     pieces.insert(4, _generate_number(number_format))
-    return f'{"".join(pieces)};{operator},{pieces[4].lower()}'
+    return f'{"".join(pieces)}:{operator};{pieces[4].lower()}'
 
 
 def _generate_unary_function(function, function_spaces, number_format, number_spaces):
@@ -73,7 +73,7 @@ def _generate_unary_function(function, function_spaces, number_format, number_sp
     pieces.insert(1, function + "(")
     pieces.insert(4, _generate_number(number_format))
     pieces.append(")")
-    return f'{"".join(pieces)};{function},(,{pieces[4].lower()},)'
+    return f'{"".join(pieces)}:{function};(;{pieces[4].lower()};)'
 
 
 def _generate_binary_operator(number_format_one, number_spaces_one, operator, operator_spaces, number_format_two, number_spaces_two):
@@ -81,7 +81,7 @@ def _generate_binary_operator(number_format_one, number_spaces_one, operator, op
     pieces.insert(1, _generate_number(number_format_one))
     pieces.insert(4, operator)
     pieces.insert(7, _generate_number(number_format_two))
-    return f'{"".join(pieces)};{pieces[1].lower()},{operator},{pieces[7].lower()}'
+    return f'{"".join(pieces)}:{pieces[1].lower()};{operator};{pieces[7].lower()}'
 
 
 def _generate_binary_function(number_format_one, number_spaces_one, function, function_spaces, number_format_two, number_spaces_two):
@@ -91,7 +91,7 @@ def _generate_binary_function(number_format_one, number_spaces_one, function, fu
     pieces.insert(6, ",")
     pieces.insert(8, _generate_number(number_format_two))
     pieces.append(")")
-    return f'{"".join(pieces)};{function},(,{pieces[4].lower()},{pieces[8].lower()},)'
+    return f'{"".join(pieces)}:{function};(;{pieces[4].lower()};,;{pieces[8].lower()};)'
 
 
 def _generate_unary_operators():

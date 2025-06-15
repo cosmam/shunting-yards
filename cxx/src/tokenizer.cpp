@@ -1,6 +1,7 @@
 #include "tokenizer.h"
 
 #include <algorithm>
+#include <array>
 #include <map>
 #include <unordered_set>
 
@@ -8,16 +9,66 @@
 
 namespace {
 
-    const std::vector<std::string> Token_Names{"(", ")", "==", "!=", "/=", "<=", ">=", "~=", "+", "-", 
-                                               "*", "/", "^", "%", "&&", "||", "<<", ">>", "°", "!", 
-                                               "~", "min", "max", "pow", "mod", "rem", "round", "acos", "asin", "atan", 
-                                               "abs", "ln", "log", "floor", "ceiling", "&", "|", "cos", "sin", "tan", 
-                                               "ceil", "<", ">"};
+    constexpr std::array<std::string, 44> Token_Names{"(", ")", "==", "!=", "/=", "<=", ">=", "~=", "+", "-", 
+                                                      "*", "/", "^", "%", "&&", "||", "<<", ">>", "°", "!", 
+                                                      "~", "min", "max", "pow", "mod", "rem", "round", "acos", "asin", "atan", 
+                                                      "abs", "ln", "log", "floor", "ceiling", "&", "|", "cos", "sin", "tan", 
+                                                      "ceil", "<", ">", ","};
 
     const std::unordered_set<char> Numeric_Tokens{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'e'};
-    const std::unordered_set<char> Skipped_Tokens{','};
     const std::unordered_set<char> Sign_Tokens{'-', '+'};
-    const std::unordered_set<std::string_view> Unknown_Arity_Tokens{Token_Names.at(8), Token_Names.at(9)};
+
+    constexpr auto operatorData() -> std::vector<std::tuple<std::string, int16_t, int16_t, bool>>
+    {
+        std::vector<std::tuple<std::string, int16_t, int16_t, bool>> data;
+
+        data.push_back(std::tuple{"(", 0, 0, true});
+        data.push_back(std::tuple{")", 0, 0, true});
+        data.push_back(std::tuple{"==", 0, 2, true});
+        data.push_back(std::tuple{"!=", 0, 2, true});
+        data.push_back(std::tuple{"/=", 0, 2, true});
+        data.push_back(std::tuple{"<=", 0, 2, true});
+        data.push_back(std::tuple{">=", 0, 2, true});
+        data.push_back(std::tuple{"~=", 0, 2, true});
+        data.push_back(std::tuple{"+", 0, -1, true});
+        data.push_back(std::tuple{"-", 0, -1, true});
+        data.push_back(std::tuple{"*", 0, 2, true});
+        data.push_back(std::tuple{"/", 0, 2, true});
+        data.push_back(std::tuple{"^", 0, 2, true});
+        data.push_back(std::tuple{"%", 0, 2, true});
+        data.push_back(std::tuple{"&&", 0, 2, true});
+        data.push_back(std::tuple{"||", 0, 2, true});
+        data.push_back(std::tuple{"<<", 0, 2, true});
+        data.push_back(std::tuple{">>", 0, 2, true});
+        data.push_back(std::tuple{"°", 0, 1, false});
+        data.push_back(std::tuple{"!", 0, 2, true});
+        data.push_back(std::tuple{"~", 0, 2, true});
+        data.push_back(std::tuple{"min", 0, 2, true});
+        data.push_back(std::tuple{"max", 0, 2, true});
+        data.push_back(std::tuple{"pow", 0, 2, true});
+        data.push_back(std::tuple{"mod", 0, 2, true});
+        data.push_back(std::tuple{"rem", 0, 2, true});
+        data.push_back(std::tuple{"round", 0, -1, true});
+        data.push_back(std::tuple{"acos", 0, 1, true});
+        data.push_back(std::tuple{"asin", 0, 1, true});
+        data.push_back(std::tuple{"atan", 0, 1, true});
+        data.push_back(std::tuple{"abs", 0, 1, true});
+        data.push_back(std::tuple{"ln", 0, 1, true});
+        data.push_back(std::tuple{"log", 0, 1, true});
+        data.push_back(std::tuple{"floor", 0, -1, true});
+        data.push_back(std::tuple{"ceiling", 0, -1, true});
+        data.push_back(std::tuple{"&", 0, 2, true});
+        data.push_back(std::tuple{"|", 0, 2, true});
+        data.push_back(std::tuple{"cos", 0, 1, true});
+        data.push_back(std::tuple{"sin", 0, 1, true});
+        data.push_back(std::tuple{"tan", 0, 1, true});
+        data.push_back(std::tuple{"ceil", 0, -1, true});
+        data.push_back(std::tuple{"<", 0, 2, true});
+        data.push_back(std::tuple{">", 0, 2, true});
+        data.push_back(std::tuple{",", 0, 0, true});
+
+        return data;
+    }
 
     auto createMap() -> std::map<std::string_view, Tokenizer::Token>
     {
@@ -66,11 +117,34 @@ namespace {
         tokens[Token_Names.at(40)] = Tokenizer::Token(Token_Names.at(40), Tokenizer::TokenType::Function);
         tokens[Token_Names.at(41)] = Tokenizer::Token(Token_Names.at(41), Tokenizer::TokenType::Operator);
         tokens[Token_Names.at(42)] = Tokenizer::Token(Token_Names.at(42), Tokenizer::TokenType::Operator);
+        tokens[Token_Names.at(43)] = Tokenizer::Token(Token_Names.at(43), Tokenizer::TokenType::Comma);
+
+        for(auto && data : operatorData()) {
+            auto & token = tokens[std::get<0>(data)];
+            token.precedence = std::get<1>(data);
+            token.arity = std::get<2>(data);
+            token.right_associative = std::get<3>(data);
+        }
 
         return tokens;
     } 
 
     const std::map<std::string_view, Tokenizer::Token> Tokens = createMap();
+
+    auto getUnknown(Tokenizer::TokenType type) -> std::unordered_set<std::string_view>
+    {
+        std::unordered_set<std::string_view> unknowns;
+        for(auto && [name, token] : Tokens) {
+            if(token.arity < 0 && token.type == type) {
+                unknowns.insert(name);
+            }
+        }
+
+        return unknowns;
+    }
+
+    const std::unordered_set<std::string_view> Unknown_Arity_Operators = getUnknown(Tokenizer::TokenType::Operator);
+    const std::unordered_set<std::string_view> Unknown_Arity_Functions = getUnknown(Tokenizer::TokenType::Function);
 }
 
 namespace Tokenizer {
@@ -111,19 +185,15 @@ namespace Tokenizer {
                 start = end;
                 previous_token_valueish = true;
             }
-            while(end < str.size() && Skipped_Tokens.contains(str.at(end))) {
-                start++;
-                end++;
-            }
             for(auto && name : Token_Names) {
                 if((start + name.size()) <= str.size() && name == str.substr(start, name.size())) {
                     tokens.push_back(Tokens.at(name));
                     start += name.size();
                     end = start;
-                    if(Unknown_Arity_Tokens.contains(name)) {
+                    if(Unknown_Arity_Operators.contains(name)) {
                         tokens.back().arity = (previous_token_valueish ? 2 : 1);
                     }
-                    previous_token_valueish = (name == ")");
+                    previous_token_valueish = (name == ")" || name == ",");
                     break;
                 }
             }

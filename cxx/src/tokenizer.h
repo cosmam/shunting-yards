@@ -7,6 +7,7 @@
 namespace Tokenizer {
 
     enum class TokenType {
+        Comma,
         Function,
         Operator,
         Parenthesis,
@@ -19,7 +20,9 @@ namespace Tokenizer {
 
         std::string_view str;
         TokenType type;
-        int arity = 0;
+        int16_t arity = 0;
+        int16_t precedence = 0;
+        bool right_associative = true;
     };
 
     auto preprocess(std::string_view str) -> std::string;

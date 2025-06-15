@@ -50,8 +50,8 @@ namespace {
         std::string str; 
         while (std::getline(file, str))
         {
-            auto pieces = split(str, ";");
-            auto tokens = split(pieces.at(1), ",");
+            auto pieces = split(str, ":");
+            auto tokens = split(pieces.at(1), ";");
 
             data.push_back(TokenizerTestData(pieces.front(), tokens));
         }
@@ -202,6 +202,17 @@ TEST(TokenizerTest, TestStallCase)
     EXPECT_EQ(toString(tokens), expected); 
 }
 
+TEST(TokenizerTest, TestComma)
+{
+    std::string raw = "round(90,10)";
+    std::vector<std::string> expected{"round", "(", "90", ",", "10", ")"};
+
+    auto input = Tokenizer::preprocess(raw);
+    auto tokens = Tokenizer::tokenize(input);
+
+    EXPECT_EQ(toString(tokens), expected); 
+}
+
 TEST(TokenizerTest, TestBasicData)
 {
     auto full_data = readBasicData();
@@ -209,7 +220,7 @@ TEST(TokenizerTest, TestBasicData)
         try {
             auto input = Tokenizer::preprocess(data.str);
             auto tokens = Tokenizer::tokenize(input);
-            
+
             EXPECT_EQ(toString(tokens), data.tokens);        
         } catch(const std::exception & e) {
             std::cout << data.str << std::endl;
