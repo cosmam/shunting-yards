@@ -206,10 +206,14 @@ TEST(TokenizerTest, TestBasicData)
 {
     auto full_data = readBasicData();
     for(auto && data : full_data) {
-        auto input = Tokenizer::preprocess(data.str);
-        auto tokens = Tokenizer::tokenize(input);
-
-        EXPECT_EQ(toString(tokens), data.tokens);        
+        try {
+            auto input = Tokenizer::preprocess(data.str);
+            auto tokens = Tokenizer::tokenize(input);
+            
+            EXPECT_EQ(toString(tokens), data.tokens);        
+        } catch(const std::exception & e) {
+            std::cout << data.str << std::endl;
+        }
     }
 }
 

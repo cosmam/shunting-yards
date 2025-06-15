@@ -8,16 +8,16 @@
 
 namespace {
 
-    const std::vector<std::string> Token_Names{"(", ")", "+", "-", "*", "/", "^", "%", "&&", 
-                                               "||", "<<", ">>", "°", "!", "~", "min", "max", "pow", "mod", 
-                                               "rem", "round", "acos", "asin", "atan", "abs", "ln", "log", "floor", "ceiling", 
-                                               "==", "!=", "/=", "<=", ">=", "~=", "&", "|", "cos", "sin", 
-                                               "tan", "ceil", "<", ">"};
+    const std::vector<std::string> Token_Names{"(", ")", "==", "!=", "/=", "<=", ">=", "~=", "+", "-", 
+                                               "*", "/", "^", "%", "&&", "||", "<<", ">>", "°", "!", 
+                                               "~", "min", "max", "pow", "mod", "rem", "round", "acos", "asin", "atan", 
+                                               "abs", "ln", "log", "floor", "ceiling", "&", "|", "cos", "sin", "tan", 
+                                               "ceil", "<", ">"};
 
     const std::unordered_set<char> Numeric_Tokens{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'e'};
     const std::unordered_set<char> Skipped_Tokens{','};
     const std::unordered_set<char> Sign_Tokens{'-', '+'};
-    const std::unordered_set<std::string_view> Unknown_Arity_Tokens{Token_Names.at(2), Token_Names.at(3)};
+    const std::unordered_set<std::string_view> Unknown_Arity_Tokens{Token_Names.at(8), Token_Names.at(9)};
 
     auto createMap() -> std::map<std::string_view, Tokenizer::Token>
     {
@@ -38,12 +38,12 @@ namespace {
         tokens[Token_Names.at(12)] = Tokenizer::Token(Token_Names.at(12), Tokenizer::TokenType::Operator);
         tokens[Token_Names.at(13)] = Tokenizer::Token(Token_Names.at(13), Tokenizer::TokenType::Operator);
         tokens[Token_Names.at(14)] = Tokenizer::Token(Token_Names.at(14), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(15)] = Tokenizer::Token(Token_Names.at(15), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(16)] = Tokenizer::Token(Token_Names.at(16), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(17)] = Tokenizer::Token(Token_Names.at(17), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(18)] = Tokenizer::Token(Token_Names.at(18), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(19)] = Tokenizer::Token(Token_Names.at(19), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(20)] = Tokenizer::Token(Token_Names.at(20), Tokenizer::TokenType::Function);
+        tokens[Token_Names.at(15)] = Tokenizer::Token(Token_Names.at(15), Tokenizer::TokenType::Operator);
+        tokens[Token_Names.at(16)] = Tokenizer::Token(Token_Names.at(16), Tokenizer::TokenType::Operator);
+        tokens[Token_Names.at(17)] = Tokenizer::Token(Token_Names.at(17), Tokenizer::TokenType::Operator);
+        tokens[Token_Names.at(18)] = Tokenizer::Token(Token_Names.at(18), Tokenizer::TokenType::Operator);
+        tokens[Token_Names.at(19)] = Tokenizer::Token(Token_Names.at(19), Tokenizer::TokenType::Operator);
+        tokens[Token_Names.at(20)] = Tokenizer::Token(Token_Names.at(20), Tokenizer::TokenType::Operator);
         tokens[Token_Names.at(21)] = Tokenizer::Token(Token_Names.at(21), Tokenizer::TokenType::Function);
         tokens[Token_Names.at(22)] = Tokenizer::Token(Token_Names.at(22), Tokenizer::TokenType::Function);
         tokens[Token_Names.at(23)] = Tokenizer::Token(Token_Names.at(23), Tokenizer::TokenType::Function);
@@ -52,12 +52,12 @@ namespace {
         tokens[Token_Names.at(26)] = Tokenizer::Token(Token_Names.at(26), Tokenizer::TokenType::Function);
         tokens[Token_Names.at(27)] = Tokenizer::Token(Token_Names.at(27), Tokenizer::TokenType::Function);
         tokens[Token_Names.at(28)] = Tokenizer::Token(Token_Names.at(28), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(29)] = Tokenizer::Token(Token_Names.at(29), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(30)] = Tokenizer::Token(Token_Names.at(30), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(31)] = Tokenizer::Token(Token_Names.at(31), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(32)] = Tokenizer::Token(Token_Names.at(32), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(33)] = Tokenizer::Token(Token_Names.at(33), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(34)] = Tokenizer::Token(Token_Names.at(34), Tokenizer::TokenType::Operator);
+        tokens[Token_Names.at(29)] = Tokenizer::Token(Token_Names.at(29), Tokenizer::TokenType::Function);
+        tokens[Token_Names.at(30)] = Tokenizer::Token(Token_Names.at(30), Tokenizer::TokenType::Function);
+        tokens[Token_Names.at(31)] = Tokenizer::Token(Token_Names.at(31), Tokenizer::TokenType::Function);
+        tokens[Token_Names.at(32)] = Tokenizer::Token(Token_Names.at(32), Tokenizer::TokenType::Function);
+        tokens[Token_Names.at(33)] = Tokenizer::Token(Token_Names.at(33), Tokenizer::TokenType::Function);
+        tokens[Token_Names.at(34)] = Tokenizer::Token(Token_Names.at(34), Tokenizer::TokenType::Function);
         tokens[Token_Names.at(35)] = Tokenizer::Token(Token_Names.at(35), Tokenizer::TokenType::Operator);
         tokens[Token_Names.at(36)] = Tokenizer::Token(Token_Names.at(36), Tokenizer::TokenType::Operator);
         tokens[Token_Names.at(37)] = Tokenizer::Token(Token_Names.at(37), Tokenizer::TokenType::Function);
@@ -93,10 +93,16 @@ namespace Tokenizer {
         std::vector<Token> tokens;
 
         bool previous_token_valueish = false;
+        size_t prev_start = 1;
         size_t start = 0;
         size_t end = 0;
 
-        while(end < str.size()) {
+        while(start < str.size()) {
+            if(start == prev_start) {
+                throw std::runtime_error("Unable to process rest of string");
+            } else {
+                prev_start = start;
+            }
             while(end < str.size() && (Numeric_Tokens.contains(str.at(end)) || isNumericSign(str, end))) {
                 end++;
             }
@@ -106,6 +112,7 @@ namespace Tokenizer {
                 previous_token_valueish = true;
             }
             while(end < str.size() && Skipped_Tokens.contains(str.at(end))) {
+                start++;
                 end++;
             }
             for(auto && name : Token_Names) {
