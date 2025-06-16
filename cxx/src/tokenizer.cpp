@@ -143,8 +143,11 @@ namespace {
         return unknowns;
     }
 
-    const std::unordered_set<std::string_view> Unknown_Arity_Operators = getUnknown(Tokenizer::TokenType::Operator);
     const std::unordered_set<std::string_view> Unknown_Arity_Functions = getUnknown(Tokenizer::TokenType::Function);
+
+    const std::map<std::string_view, std::array<int16_t, 2>> Unknown_Arity_Operators{{Token_Names.at(8), {2, 4}},
+                                                                                     {Token_Names.at(9), {2, 4}}};
+
 }
 
 namespace Tokenizer {
@@ -160,6 +163,11 @@ namespace Tokenizer {
     auto isNumericSign(std::string_view s, size_t pos) -> bool
     {
         return (pos > 0 && Sign_Tokens.contains(s.at(pos)) && s.at(pos-1) == 'e');
+    }
+
+    auto setPrecedence(Token & token)
+    {
+
     }
 
     auto tokenize(std::string_view str) -> std::vector<Token>
