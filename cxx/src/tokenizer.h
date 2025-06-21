@@ -20,8 +20,8 @@ namespace Tokenizer {
 
         std::string_view str;
         TokenType type;
-        int16_t arity = 0;
         int16_t precedence = 0;
+        int16_t arity = 0;
         bool right_associative = true;
     };
 

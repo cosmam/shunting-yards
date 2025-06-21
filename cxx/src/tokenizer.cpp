@@ -22,27 +22,27 @@ namespace {
     {
         std::vector<std::tuple<std::string, int16_t, int16_t, bool>> data;
 
-        data.push_back(std::tuple{"(", 0, 0, true});
-        data.push_back(std::tuple{")", 0, 0, true});
-        data.push_back(std::tuple{"==", 0, 2, true});
-        data.push_back(std::tuple{"!=", 0, 2, true});
-        data.push_back(std::tuple{"/=", 0, 2, true});
-        data.push_back(std::tuple{"<=", 0, 2, true});
-        data.push_back(std::tuple{">=", 0, 2, true});
-        data.push_back(std::tuple{"~=", 0, 2, true});
-        data.push_back(std::tuple{"+", 0, -1, true});
-        data.push_back(std::tuple{"-", 0, -1, true});
-        data.push_back(std::tuple{"*", 0, 2, true});
-        data.push_back(std::tuple{"/", 0, 2, true});
-        data.push_back(std::tuple{"^", 0, 2, true});
-        data.push_back(std::tuple{"%", 0, 2, true});
-        data.push_back(std::tuple{"&&", 0, 2, true});
-        data.push_back(std::tuple{"||", 0, 2, true});
-        data.push_back(std::tuple{"<<", 0, 2, true});
-        data.push_back(std::tuple{">>", 0, 2, true});
-        data.push_back(std::tuple{"°", 0, 1, false});
-        data.push_back(std::tuple{"!", 0, 2, true});
-        data.push_back(std::tuple{"~", 0, 2, true});
+        data.push_back(std::tuple{"(", 2, 0, true});
+        data.push_back(std::tuple{")", 2, 0, true});
+        data.push_back(std::tuple{"==", 16, 2, true});
+        data.push_back(std::tuple{"!=", 16, 2, true});
+        data.push_back(std::tuple{"/=", 16, 2, true});
+        data.push_back(std::tuple{"<=", 9, 2, true});
+        data.push_back(std::tuple{">=", 9, 2, true});
+        data.push_back(std::tuple{"~=", 16, 2, true});
+        data.push_back(std::tuple{"+", -1, -1, true});
+        data.push_back(std::tuple{"-", -1, -1, true});
+        data.push_back(std::tuple{"*", 5, 2, true});
+        data.push_back(std::tuple{"/", 5, 2, true});
+        data.push_back(std::tuple{"^", 4, 2, true});
+        data.push_back(std::tuple{"%", 5, 2, true});
+        data.push_back(std::tuple{"&&", 14, 2, true});
+        data.push_back(std::tuple{"||", 15, 2, true});
+        data.push_back(std::tuple{"<<", 7, 2, true});
+        data.push_back(std::tuple{">>", 7, 2, true});
+        data.push_back(std::tuple{"°", 3, 1, false});
+        data.push_back(std::tuple{"!", 3, 1, true});
+        data.push_back(std::tuple{"~", 3, 1, true});
         data.push_back(std::tuple{"min", 0, 2, true});
         data.push_back(std::tuple{"max", 0, 2, true});
         data.push_back(std::tuple{"pow", 0, 2, true});
@@ -57,15 +57,15 @@ namespace {
         data.push_back(std::tuple{"log", 0, 1, true});
         data.push_back(std::tuple{"floor", 0, -1, true});
         data.push_back(std::tuple{"ceiling", 0, -1, true});
-        data.push_back(std::tuple{"&", 0, 2, true});
-        data.push_back(std::tuple{"|", 0, 2, true});
+        data.push_back(std::tuple{"&", 11, 2, true});
+        data.push_back(std::tuple{"|", 13, 2, true});
         data.push_back(std::tuple{"cos", 0, 1, true});
         data.push_back(std::tuple{"sin", 0, 1, true});
         data.push_back(std::tuple{"tan", 0, 1, true});
         data.push_back(std::tuple{"ceil", 0, -1, true});
-        data.push_back(std::tuple{"<", 0, 2, true});
-        data.push_back(std::tuple{">", 0, 2, true});
-        data.push_back(std::tuple{",", 0, 0, true});
+        data.push_back(std::tuple{"<", 9, 2, true});
+        data.push_back(std::tuple{">", 9, 2, true});
+        data.push_back(std::tuple{",", 18, 0, true});
 
         return data;
     }
@@ -129,6 +129,17 @@ namespace {
         return tokens;
     } 
 
+    auto createVariablePrecedences() -> std::map<std::string_view, std::array<int16_t, 2>>
+    {
+        std::map<std::string_view, std::array<int16_t, 2>> precedences;
+
+        precedences[Token_Names.at(8)] = {3, 6};
+        precedences[Token_Names.at(9)] = {3, 6};
+
+        return precedences;
+    }
+
+    const std::map<std::string_view, std::array<int16_t, 2>> Variable_Precedences = createVariablePrecedences();
     const std::map<std::string_view, Tokenizer::Token> Tokens = createMap();
 
     auto getUnknown(Tokenizer::TokenType type) -> std::unordered_set<std::string_view>
@@ -145,8 +156,8 @@ namespace {
 
     const std::unordered_set<std::string_view> Unknown_Arity_Functions = getUnknown(Tokenizer::TokenType::Function);
 
-    const std::map<std::string_view, std::array<int16_t, 2>> Unknown_Arity_Operators{{Token_Names.at(8), {2, 4}},
-                                                                                     {Token_Names.at(9), {2, 4}}};
+    const std::map<std::string_view, std::array<int16_t, 2>> Ambiguous_Operators{{Token_Names.at(8), {2, 4}},
+                                                                                 {Token_Names.at(9), {2, 4}}};
 
 }
 
@@ -198,8 +209,10 @@ namespace Tokenizer {
                     tokens.push_back(Tokens.at(name));
                     start += name.size();
                     end = start;
-                    if(Unknown_Arity_Operators.contains(name)) {
-                        tokens.back().arity = (previous_token_valueish ? 2 : 1);
+                    if(Ambiguous_Operators.contains(name)) {
+                        auto & token = tokens.back();
+                        token.arity = (previous_token_valueish ? 2 : 1);
+                        token.precedence = Variable_Precedences.at(token.str)[token.arity - 1];
                     }
                     previous_token_valueish = (name == ")" || name == ",");
                     break;

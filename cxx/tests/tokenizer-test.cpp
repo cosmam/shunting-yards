@@ -213,33 +213,88 @@ TEST(TokenizerTest, TestComma)
     EXPECT_EQ(toString(tokens), expected); 
 }
 
-TEST(TokenizerTest, TestBasicData)
-{
-    auto full_data = readBasicData();
-    for(auto && data : full_data) {
-        try {
-            auto input = Tokenizer::preprocess(data.str);
-            auto tokens = Tokenizer::tokenize(input);
-
-            EXPECT_EQ(toString(tokens), data.tokens);        
-        } catch(const std::exception & e) {
-            std::cout << data.str << std::endl;
-        }
-    }
-}
-
-// class BasicTokenizerSuite : public ::testing::TestWithParam<TokenizerTestData> {};
-
-// INSTANTIATE_TEST_SUITE_P(BasicTokenizerTest,
-//                          BasicTokenizerSuite,
-//                          testing::ValuesIn(readBasicData()));
-
-// TEST_P(BasicTokenizerSuite, TestBasicTokenize)
+// TEST(TokenizerTest, TestBasicData)
 // {
-//     auto data = GetParam();
+//     auto full_data = readBasicData();
+//     for(auto && data : full_data) {
+//         try {
+//             auto input = Tokenizer::preprocess(data.str);
+//             auto tokens = Tokenizer::tokenize(input);
 
-//     auto input = Tokenizer::preprocess(data.str);
-//     auto tokens = Tokenizer::tokenize(input);
+//             EXPECT_EQ(toString(tokens), data.tokens);        
+//         } catch(const std::exception & e) {
+//             std::cout << data.str << std::endl;
+//         }
+//     }
+// }
 
-//     EXPECT_EQ(toString(tokens), data.tokens);
-// };
+// symbol, precedence, right-associative
+class UnaryOperatorData : public ::testing::TestWithParam<std::tuple<std::string, int16_t, bool>> {};
+
+INSTANTIATE_TEST_SUITE_P(UnaryOperatorSuite,
+                         UnaryOperatorData,
+                         testing::Values(std::tuple{"+", 3, true}, 
+                                         std::tuple{"-", 3, true}, 
+                                         std::tuple{"~", 3, true}, 
+                                         std::tuple{"!", 3, true}, 
+                                         std::tuple{"°", 3, false}));
+
+TEST_P(UnaryOperatorData, testUnaryOperatorData)
+{
+    auto params = GetParam();
+    auto symbol = std::get<0>(params);
+    auto precedence = std::get<1>(params);
+    auto right_associative = std::get<2>(params);
+
+    std::string str = (right_associative ? symbol : "") + std::string("2") + (right_associative ? "" : symbol);
+
+    auto tokens = Tokenizer::tokenize(str);
+
+    auto token = tokens.at(right_associative ? 0 : 1);
+
+    EXPECT_EQ(token.arity, 1);
+    EXPECT_EQ(token.precedence, precedence);
+    EXPECT_EQ(token.right_associative, right_associative);
+};
+
+// symbol, precedence
+class BinaryOperatorData : public ::testing::TestWithParam<std::tuple<std::string, int16_t>> {};
+
+INSTANTIATE_TEST_SUITE_P(BinaryOperatorSuite,
+                         BinaryOperatorData,
+                         testing::Values(std::tuple{"==", 16},
+                                         std::tuple{"!=", 16},
+                                         std::tuple{"/=", 16},
+                                         std::tuple{"<=", 9},
+                                         std::tuple{">=", 9},
+                                         std::tuple{"~=", 16},
+                                         std::tuple{"+", 6},
+                                         std::tuple{"-", 6},
+                                         std::tuple{"*", 5},
+                                         std::tuple{"/", 5},
+                                         std::tuple{"^", 4},
+                                         std::tuple{"%", 5},
+                                         std::tuple{"&&", 14},
+                                         std::tuple{"||", 15},
+                                         std::tuple{"<<", 7},
+                                         std::tuple{">>", 7},
+                                         std::tuple{"&", 11},
+                                         std::tuple{"|", 13},
+                                         std::tuple{"<", 9},
+                                         std::tuple{">", 9}));
+
+TEST_P(BinaryOperatorData, testBinaryOperatorData)
+{
+    auto params = GetParam();
+    auto symbol = std::get<0>(params);
+    auto precedence = std::get<1>(params);
+
+    std::string str = std::string("2") + symbol + std::string("2");
+
+    auto tokens = Tokenizer::tokenize(str);
+
+    auto token = tokens.at(1);
+
+    EXPECT_EQ(token.arity, 2);
+    EXPECT_EQ(token.precedence, precedence);
+};
