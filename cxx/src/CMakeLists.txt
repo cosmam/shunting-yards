@@ -7,6 +7,7 @@ set(HEADERS
 set(SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/token.cpp
     ${CMAKE_CURRENT_LIST_DIR}/equation_evaluator.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/operations.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})

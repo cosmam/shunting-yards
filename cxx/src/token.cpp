@@ -26,12 +26,13 @@ Token::Token(std::string_view text, TokenType t)
 {
 }
 
-Token::Token(std::string_view text, TokenType t, CalcFunc func, int16_t precedence, int16_t arity)
+Token::Token(std::string_view text, TokenType t, CalcFunc func, int16_t precedence, int16_t arity, bool right_associative)
   : _text(text),
     _type(t),
     _func(func),
     _precedence(precedence),
-    _arity(arity)
+    _arity(arity),
+    _right_associative(right_associative)
 {
     if(text.size() == 0) {
         throw std::invalid_argument("Token length must not be 0");

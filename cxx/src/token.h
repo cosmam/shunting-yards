@@ -23,7 +23,7 @@ public:
 
     Token(std::string_view text, TokenType t);
 
-    Token(std::string_view text, TokenType t, CalcFunc func, int16_t precedence, int16_t arity);
+    Token(std::string_view text, TokenType t, CalcFunc func, int16_t precedence, int16_t arity, bool right_associative = true);
 
     auto text() const noexcept -> std::string_view;
 
