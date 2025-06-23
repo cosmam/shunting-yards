@@ -4,6 +4,10 @@ project(shunting_yard VERSION 0.1 DESCRIPTION "C++ shunting yard implementation"
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+enable_testing()
+
+set(CMAKE_BUILD_TYPE "Debug")
+
 include(FetchContent)
 FetchContent_Declare(
   googletest

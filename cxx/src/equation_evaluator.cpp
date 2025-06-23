@@ -1,4 +1,4 @@
-#include "tokenizer.h"
+#include "equation_evaluator.h"
 
 #include <algorithm>
 #include <array>
@@ -70,60 +70,60 @@ namespace {
         return data;
     }
 
-    auto createMap() -> std::map<std::string_view, Tokenizer::Token>
+    auto createMap() -> std::map<std::string_view, Token>
     {
-        std::map<std::string_view, Tokenizer::Token> tokens;
+        std::map<std::string_view, Token> tokens;
 
-        tokens[Token_Names.at(0)] = Tokenizer::Token(Token_Names.at(0), Tokenizer::TokenType::Parenthesis);
-        tokens[Token_Names.at(1)] = Tokenizer::Token(Token_Names.at(1), Tokenizer::TokenType::Parenthesis);
-        tokens[Token_Names.at(2)] = Tokenizer::Token(Token_Names.at(2), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(3)] = Tokenizer::Token(Token_Names.at(3), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(4)] = Tokenizer::Token(Token_Names.at(4), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(5)] = Tokenizer::Token(Token_Names.at(5), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(6)] = Tokenizer::Token(Token_Names.at(6), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(7)] = Tokenizer::Token(Token_Names.at(7), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(8)] = Tokenizer::Token(Token_Names.at(8), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(9)] = Tokenizer::Token(Token_Names.at(9), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(10)] = Tokenizer::Token(Token_Names.at(10), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(11)] = Tokenizer::Token(Token_Names.at(11), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(12)] = Tokenizer::Token(Token_Names.at(12), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(13)] = Tokenizer::Token(Token_Names.at(13), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(14)] = Tokenizer::Token(Token_Names.at(14), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(15)] = Tokenizer::Token(Token_Names.at(15), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(16)] = Tokenizer::Token(Token_Names.at(16), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(17)] = Tokenizer::Token(Token_Names.at(17), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(18)] = Tokenizer::Token(Token_Names.at(18), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(19)] = Tokenizer::Token(Token_Names.at(19), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(20)] = Tokenizer::Token(Token_Names.at(20), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(21)] = Tokenizer::Token(Token_Names.at(21), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(22)] = Tokenizer::Token(Token_Names.at(22), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(23)] = Tokenizer::Token(Token_Names.at(23), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(24)] = Tokenizer::Token(Token_Names.at(24), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(25)] = Tokenizer::Token(Token_Names.at(25), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(26)] = Tokenizer::Token(Token_Names.at(26), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(27)] = Tokenizer::Token(Token_Names.at(27), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(28)] = Tokenizer::Token(Token_Names.at(28), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(29)] = Tokenizer::Token(Token_Names.at(29), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(30)] = Tokenizer::Token(Token_Names.at(30), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(31)] = Tokenizer::Token(Token_Names.at(31), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(32)] = Tokenizer::Token(Token_Names.at(32), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(33)] = Tokenizer::Token(Token_Names.at(33), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(34)] = Tokenizer::Token(Token_Names.at(34), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(35)] = Tokenizer::Token(Token_Names.at(35), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(36)] = Tokenizer::Token(Token_Names.at(36), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(37)] = Tokenizer::Token(Token_Names.at(37), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(38)] = Tokenizer::Token(Token_Names.at(38), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(39)] = Tokenizer::Token(Token_Names.at(39), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(40)] = Tokenizer::Token(Token_Names.at(40), Tokenizer::TokenType::Function);
-        tokens[Token_Names.at(41)] = Tokenizer::Token(Token_Names.at(41), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(42)] = Tokenizer::Token(Token_Names.at(42), Tokenizer::TokenType::Operator);
-        tokens[Token_Names.at(43)] = Tokenizer::Token(Token_Names.at(43), Tokenizer::TokenType::Comma);
+        tokens.emplace(std::make_pair(Token_Names.at(0), Token(Token_Names.at(0), Token::TokenType::Parenthesis)));
+        tokens.emplace(std::make_pair(Token_Names.at(1), Token(Token_Names.at(1), Token::TokenType::Parenthesis)));
+        tokens.emplace(std::make_pair(Token_Names.at(2), Token(Token_Names.at(2), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(3), Token(Token_Names.at(3), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(4), Token(Token_Names.at(4), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(5), Token(Token_Names.at(5), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(6), Token(Token_Names.at(6), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(7), Token(Token_Names.at(7), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(8), Token(Token_Names.at(8), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(9), Token(Token_Names.at(9), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(10), Token(Token_Names.at(10), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(11), Token(Token_Names.at(11), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(12), Token(Token_Names.at(12), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(13), Token(Token_Names.at(13), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(14), Token(Token_Names.at(14), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(15), Token(Token_Names.at(15), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(16), Token(Token_Names.at(16), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(17), Token(Token_Names.at(17), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(18), Token(Token_Names.at(18), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(19), Token(Token_Names.at(19), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(20), Token(Token_Names.at(20), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(21), Token(Token_Names.at(21), Token::TokenType::Function)));
+        tokens.emplace(std::make_pair(Token_Names.at(22), Token(Token_Names.at(22), Token::TokenType::Function)));
+        tokens.emplace(std::make_pair(Token_Names.at(23), Token(Token_Names.at(23), Token::TokenType::Function)));
+        tokens.emplace(std::make_pair(Token_Names.at(24), Token(Token_Names.at(24), Token::TokenType::Function)));
+        tokens.emplace(std::make_pair(Token_Names.at(25), Token(Token_Names.at(25), Token::TokenType::Function)));
+        tokens.emplace(std::make_pair(Token_Names.at(26), Token(Token_Names.at(26), Token::TokenType::Function)));
+        tokens.emplace(std::make_pair(Token_Names.at(27), Token(Token_Names.at(27), Token::TokenType::Function)));
+        tokens.emplace(std::make_pair(Token_Names.at(28), Token(Token_Names.at(28), Token::TokenType::Function)));
+        tokens.emplace(std::make_pair(Token_Names.at(29), Token(Token_Names.at(29), Token::TokenType::Function)));
+        tokens.emplace(std::make_pair(Token_Names.at(30), Token(Token_Names.at(30), Token::TokenType::Function)));
+        tokens.emplace(std::make_pair(Token_Names.at(31), Token(Token_Names.at(31), Token::TokenType::Function)));
+        tokens.emplace(std::make_pair(Token_Names.at(32), Token(Token_Names.at(32), Token::TokenType::Function)));
+        tokens.emplace(std::make_pair(Token_Names.at(33), Token(Token_Names.at(33), Token::TokenType::Function)));
+        tokens.emplace(std::make_pair(Token_Names.at(34), Token(Token_Names.at(34), Token::TokenType::Function)));
+        tokens.emplace(std::make_pair(Token_Names.at(35), Token(Token_Names.at(35), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(36), Token(Token_Names.at(36), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(37), Token(Token_Names.at(37), Token::TokenType::Function)));
+        tokens.emplace(std::make_pair(Token_Names.at(38), Token(Token_Names.at(38), Token::TokenType::Function)));
+        tokens.emplace(std::make_pair(Token_Names.at(39), Token(Token_Names.at(39), Token::TokenType::Function)));
+        tokens.emplace(std::make_pair(Token_Names.at(40), Token(Token_Names.at(40), Token::TokenType::Function)));
+        tokens.emplace(std::make_pair(Token_Names.at(41), Token(Token_Names.at(41), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(42), Token(Token_Names.at(42), Token::TokenType::Operator)));
+        tokens.emplace(std::make_pair(Token_Names.at(43), Token(Token_Names.at(43), Token::TokenType::Comma)));
 
         for(auto && data : operatorData()) {
-            auto & token = tokens[std::get<0>(data)];
-            token.precedence = std::get<1>(data);
-            token.arity = std::get<2>(data);
-            token.right_associative = std::get<3>(data);
+            auto & token = tokens.at(std::get<0>(data));
+            token.setPrecedence(std::get<1>(data));
+            token.setArity(std::get<2>(data));
+            token.setRightAssociative(std::get<3>(data));
         }
 
         return tokens;
@@ -140,13 +140,13 @@ namespace {
     }
 
     const std::map<std::string_view, std::array<int16_t, 2>> Variable_Precedences = createVariablePrecedences();
-    const std::map<std::string_view, Tokenizer::Token> Tokens = createMap();
+    const std::map<std::string_view, Token> Tokens = createMap();
 
-    auto getUnknown(Tokenizer::TokenType type) -> std::unordered_set<std::string_view>
+    auto getUnknown(Token::TokenType type) -> std::unordered_set<std::string_view>
     {
         std::unordered_set<std::string_view> unknowns;
         for(auto && [name, token] : Tokens) {
-            if(token.arity < 0 && token.type == type) {
+            if(token.arity() < 0 && token.type() == type) {
                 unknowns.insert(name);
             }
         }
@@ -154,14 +154,14 @@ namespace {
         return unknowns;
     }
 
-    const std::unordered_set<std::string_view> Unknown_Arity_Functions = getUnknown(Tokenizer::TokenType::Function);
+    const std::unordered_set<std::string_view> Unknown_Arity_Functions = getUnknown(Token::TokenType::Function);
 
     const std::map<std::string_view, std::array<int16_t, 2>> Ambiguous_Operators{{Token_Names.at(8), {2, 4}},
                                                                                  {Token_Names.at(9), {2, 4}}};
 
 }
 
-namespace Tokenizer {
+namespace EquationEvaluator {
 
     auto preprocess(std::string_view str) -> std::string
     {
@@ -200,7 +200,7 @@ namespace Tokenizer {
                 end++;
             }
             if(end > start) {
-                tokens.push_back(Token(str.substr(start, end-start), TokenType::Value));
+                tokens.push_back(Token(str.substr(start, end-start), Token::TokenType::Value));
                 start = end;
                 previous_token_valueish = true;
             }
@@ -211,8 +211,8 @@ namespace Tokenizer {
                     end = start;
                     if(Ambiguous_Operators.contains(name)) {
                         auto & token = tokens.back();
-                        token.arity = (previous_token_valueish ? 2 : 1);
-                        token.precedence = Variable_Precedences.at(token.str)[token.arity - 1];
+                        token.setArity(previous_token_valueish ? 2 : 1);
+                        token.setPrecedence(Variable_Precedences.at(token.text())[token.arity() - 1]);
                     }
                     previous_token_valueish = (name == ")" || name == ",");
                     break;
