@@ -11,11 +11,11 @@
 
 namespace {
 
-    constexpr std::array<std::string, 44> Token_Names{"(", ")", "==", "!=", "/=", "<=", ">=", "~=", "+", "-", 
-                                                      "*", "/", "^", "%", "&&", "||", "<<", ">>", "°", "!", 
-                                                      "~", "min", "max", "pow", "mod", "rem", "round", "acos", "asin", "atan", 
-                                                      "abs", "ln", "log", "floor", "ceiling", "&", "|", "cos", "sin", "tan", 
-                                                      "ceil", "<", ">", ","};
+    constexpr std::array<std::string, 45> Token_Names{"(", ")", "==", "!=", "/=", "<=", ">=", "~=", "+", "-", 
+                                                      "**", "*", "/", "^", "%", "&&", "||", "<<", ">>", "°", 
+                                                      "!", "~", "min", "max", "pow", "mod", "rem", "round", "acos", "asin", 
+                                                      "atan", "abs", "ln", "log", "floor", "ceiling", "&", "|", "cos", "sin", 
+                                                      "tan", "ceil", "<", ">", ","};
 
     const std::unordered_set<char> Numeric_Tokens{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'e'};
     const std::unordered_set<char> Sign_Tokens{'-', '+'};
@@ -34,40 +34,41 @@ namespace {
         tokens.emplace(std::make_pair(Token_Names.at(7), Token(Token_Names.at(7), Token::TokenType::Operator, &Operations::approximatelyEquals, 16, 2)));
         tokens.emplace(std::make_pair(Token_Names.at(8), Token(Token_Names.at(8), Token::TokenType::Operator, &Operations::plus, -1, -1)));
         tokens.emplace(std::make_pair(Token_Names.at(9), Token(Token_Names.at(9), Token::TokenType::Operator, &Operations::minus, -1, -1)));
-        tokens.emplace(std::make_pair(Token_Names.at(10), Token(Token_Names.at(10), Token::TokenType::Operator, &Operations::multiply, 5, 2)));
-        tokens.emplace(std::make_pair(Token_Names.at(11), Token(Token_Names.at(11), Token::TokenType::Operator, &Operations::divide, 5, 2)));
-        tokens.emplace(std::make_pair(Token_Names.at(12), Token(Token_Names.at(12), Token::TokenType::Operator, &Operations::power, 4, 2)));
-        tokens.emplace(std::make_pair(Token_Names.at(13), Token(Token_Names.at(13), Token::TokenType::Operator, &Operations::modulo, 5, 2)));
-        tokens.emplace(std::make_pair(Token_Names.at(14), Token(Token_Names.at(14), Token::TokenType::Operator, &Operations::logicalAnd, 14, 2)));
-        tokens.emplace(std::make_pair(Token_Names.at(15), Token(Token_Names.at(15), Token::TokenType::Operator, &Operations::logicalOr, 15, 2)));
-        tokens.emplace(std::make_pair(Token_Names.at(16), Token(Token_Names.at(16), Token::TokenType::Operator, &Operations::bitshiftLeft, 7, 2)));
-        tokens.emplace(std::make_pair(Token_Names.at(17), Token(Token_Names.at(17), Token::TokenType::Operator, &Operations::bitshiftRight, 7, 2)));
-        tokens.emplace(std::make_pair(Token_Names.at(18), Token(Token_Names.at(18), Token::TokenType::Operator, &Operations::degree, 3, 1, false)));
-        tokens.emplace(std::make_pair(Token_Names.at(19), Token(Token_Names.at(19), Token::TokenType::Operator, &Operations::logicalNot, 3, 1)));
-        tokens.emplace(std::make_pair(Token_Names.at(20), Token(Token_Names.at(20), Token::TokenType::Operator, &Operations::bitwiseNot, 3, 1)));
-        tokens.emplace(std::make_pair(Token_Names.at(21), Token(Token_Names.at(21), Token::TokenType::Function, &Operations::min, 0, 2)));
-        tokens.emplace(std::make_pair(Token_Names.at(22), Token(Token_Names.at(22), Token::TokenType::Function, &Operations::max, 0, 2)));
-        tokens.emplace(std::make_pair(Token_Names.at(23), Token(Token_Names.at(23), Token::TokenType::Function, &Operations::power, 0, 2)));
-        tokens.emplace(std::make_pair(Token_Names.at(24), Token(Token_Names.at(24), Token::TokenType::Function, &Operations::modulo, 0, 2)));
-        tokens.emplace(std::make_pair(Token_Names.at(25), Token(Token_Names.at(25), Token::TokenType::Function, &Operations::remainder, 0, 2)));
-        tokens.emplace(std::make_pair(Token_Names.at(26), Token(Token_Names.at(26), Token::TokenType::Function, &Operations::round, 0, -1)));
-        tokens.emplace(std::make_pair(Token_Names.at(27), Token(Token_Names.at(27), Token::TokenType::Function, &Operations::aCos, 0, 1)));
-        tokens.emplace(std::make_pair(Token_Names.at(28), Token(Token_Names.at(28), Token::TokenType::Function, &Operations::aSin, 0, 1)));
-        tokens.emplace(std::make_pair(Token_Names.at(29), Token(Token_Names.at(29), Token::TokenType::Function, &Operations::aTan, 0, 1)));
-        tokens.emplace(std::make_pair(Token_Names.at(30), Token(Token_Names.at(30), Token::TokenType::Function, &Operations::abs, 0, 1)));
-        tokens.emplace(std::make_pair(Token_Names.at(31), Token(Token_Names.at(31), Token::TokenType::Function, &Operations::ln, 0, 1)));
-        tokens.emplace(std::make_pair(Token_Names.at(32), Token(Token_Names.at(32), Token::TokenType::Function, &Operations::log, 0, 1)));
-        tokens.emplace(std::make_pair(Token_Names.at(33), Token(Token_Names.at(33), Token::TokenType::Function, &Operations::floor, 0, -1)));
-        tokens.emplace(std::make_pair(Token_Names.at(34), Token(Token_Names.at(34), Token::TokenType::Function, &Operations::ceiling, 0, -1)));
-        tokens.emplace(std::make_pair(Token_Names.at(35), Token(Token_Names.at(35), Token::TokenType::Operator, &Operations::bitwiseAnd, 11, 2)));
-        tokens.emplace(std::make_pair(Token_Names.at(36), Token(Token_Names.at(36), Token::TokenType::Operator, &Operations::bitwiseOr, 13, 2)));
-        tokens.emplace(std::make_pair(Token_Names.at(37), Token(Token_Names.at(37), Token::TokenType::Function, &Operations::cos, 0, 1)));
-        tokens.emplace(std::make_pair(Token_Names.at(38), Token(Token_Names.at(38), Token::TokenType::Function, &Operations::sin, 0, 1)));
-        tokens.emplace(std::make_pair(Token_Names.at(39), Token(Token_Names.at(39), Token::TokenType::Function, &Operations::tan, 0, 1)));
-        tokens.emplace(std::make_pair(Token_Names.at(40), Token(Token_Names.at(40), Token::TokenType::Function, &Operations::ceiling, 0, -1)));
-        tokens.emplace(std::make_pair(Token_Names.at(41), Token(Token_Names.at(41), Token::TokenType::Operator, &Operations::lessThan, 9, 2)));
-        tokens.emplace(std::make_pair(Token_Names.at(42), Token(Token_Names.at(42), Token::TokenType::Operator, &Operations::greaterThan, 9, 2)));
-        tokens.emplace(std::make_pair(Token_Names.at(43), Token(Token_Names.at(43), Token::TokenType::Comma)));
+        tokens.emplace(std::make_pair(Token_Names.at(10), Token(Token_Names.at(10), Token::TokenType::Operator, &Operations::power, 5, 2)));
+        tokens.emplace(std::make_pair(Token_Names.at(11), Token(Token_Names.at(11), Token::TokenType::Operator, &Operations::multiply, 5, 2)));
+        tokens.emplace(std::make_pair(Token_Names.at(12), Token(Token_Names.at(12), Token::TokenType::Operator, &Operations::divide, 5, 2)));
+        tokens.emplace(std::make_pair(Token_Names.at(13), Token(Token_Names.at(13), Token::TokenType::Operator, &Operations::power, 4, 2)));
+        tokens.emplace(std::make_pair(Token_Names.at(14), Token(Token_Names.at(14), Token::TokenType::Operator, &Operations::modulo, 5, 2)));
+        tokens.emplace(std::make_pair(Token_Names.at(15), Token(Token_Names.at(15), Token::TokenType::Operator, &Operations::logicalAnd, 14, 2)));
+        tokens.emplace(std::make_pair(Token_Names.at(16), Token(Token_Names.at(16), Token::TokenType::Operator, &Operations::logicalOr, 15, 2)));
+        tokens.emplace(std::make_pair(Token_Names.at(17), Token(Token_Names.at(17), Token::TokenType::Operator, &Operations::bitshiftLeft, 7, 2)));
+        tokens.emplace(std::make_pair(Token_Names.at(18), Token(Token_Names.at(18), Token::TokenType::Operator, &Operations::bitshiftRight, 7, 2)));
+        tokens.emplace(std::make_pair(Token_Names.at(19), Token(Token_Names.at(19), Token::TokenType::Operator, &Operations::degree, 3, 1, false)));
+        tokens.emplace(std::make_pair(Token_Names.at(20), Token(Token_Names.at(20), Token::TokenType::Operator, &Operations::logicalNot, 3, 1)));
+        tokens.emplace(std::make_pair(Token_Names.at(21), Token(Token_Names.at(21), Token::TokenType::Operator, &Operations::bitwiseNot, 3, 1)));
+        tokens.emplace(std::make_pair(Token_Names.at(22), Token(Token_Names.at(22), Token::TokenType::Function, &Operations::min, 0, 2)));
+        tokens.emplace(std::make_pair(Token_Names.at(23), Token(Token_Names.at(23), Token::TokenType::Function, &Operations::max, 0, 2)));
+        tokens.emplace(std::make_pair(Token_Names.at(24), Token(Token_Names.at(24), Token::TokenType::Function, &Operations::power, 0, 2)));
+        tokens.emplace(std::make_pair(Token_Names.at(25), Token(Token_Names.at(25), Token::TokenType::Function, &Operations::modulo, 0, 2)));
+        tokens.emplace(std::make_pair(Token_Names.at(26), Token(Token_Names.at(26), Token::TokenType::Function, &Operations::remainder, 0, 2)));
+        tokens.emplace(std::make_pair(Token_Names.at(27), Token(Token_Names.at(27), Token::TokenType::Function, &Operations::round, 0, -1)));
+        tokens.emplace(std::make_pair(Token_Names.at(28), Token(Token_Names.at(28), Token::TokenType::Function, &Operations::aCos, 0, 1)));
+        tokens.emplace(std::make_pair(Token_Names.at(29), Token(Token_Names.at(29), Token::TokenType::Function, &Operations::aSin, 0, 1)));
+        tokens.emplace(std::make_pair(Token_Names.at(30), Token(Token_Names.at(30), Token::TokenType::Function, &Operations::aTan, 0, 1)));
+        tokens.emplace(std::make_pair(Token_Names.at(31), Token(Token_Names.at(31), Token::TokenType::Function, &Operations::abs, 0, 1)));
+        tokens.emplace(std::make_pair(Token_Names.at(32), Token(Token_Names.at(32), Token::TokenType::Function, &Operations::ln, 0, 1)));
+        tokens.emplace(std::make_pair(Token_Names.at(33), Token(Token_Names.at(33), Token::TokenType::Function, &Operations::log, 0, 1)));
+        tokens.emplace(std::make_pair(Token_Names.at(34), Token(Token_Names.at(34), Token::TokenType::Function, &Operations::floor, 0, -1)));
+        tokens.emplace(std::make_pair(Token_Names.at(35), Token(Token_Names.at(35), Token::TokenType::Function, &Operations::ceiling, 0, -1)));
+        tokens.emplace(std::make_pair(Token_Names.at(36), Token(Token_Names.at(36), Token::TokenType::Operator, &Operations::bitwiseAnd, 11, 2)));
+        tokens.emplace(std::make_pair(Token_Names.at(37), Token(Token_Names.at(37), Token::TokenType::Operator, &Operations::bitwiseOr, 13, 2)));
+        tokens.emplace(std::make_pair(Token_Names.at(38), Token(Token_Names.at(38), Token::TokenType::Function, &Operations::cos, 0, 1)));
+        tokens.emplace(std::make_pair(Token_Names.at(39), Token(Token_Names.at(39), Token::TokenType::Function, &Operations::sin, 0, 1)));
+        tokens.emplace(std::make_pair(Token_Names.at(40), Token(Token_Names.at(40), Token::TokenType::Function, &Operations::tan, 0, 1)));
+        tokens.emplace(std::make_pair(Token_Names.at(41), Token(Token_Names.at(41), Token::TokenType::Function, &Operations::ceiling, 0, -1)));
+        tokens.emplace(std::make_pair(Token_Names.at(42), Token(Token_Names.at(42), Token::TokenType::Operator, &Operations::lessThan, 9, 2)));
+        tokens.emplace(std::make_pair(Token_Names.at(43), Token(Token_Names.at(43), Token::TokenType::Operator, &Operations::greaterThan, 9, 2)));
+        tokens.emplace(std::make_pair(Token_Names.at(44), Token(Token_Names.at(44), Token::TokenType::Comma)));
 
         return tokens;
     } 
