@@ -17,5 +17,8 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
+include(CodeCoverage.cmake)
+append_coverage_compiler_flags()
+
 add_subdirectory(src)
 add_subdirectory(tests)

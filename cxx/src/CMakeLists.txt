@@ -12,3 +12,10 @@ set(SOURCES
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER ${HEADERS})
+
+
+setup_target_for_coverage_gcovr_html(
+    NAME ${PROJECT_NAME}_coverage 
+    EXECUTABLE equation_evaluator_test
+    EXCLUDE ${CMAKE_BINARY_DIR} "*/tests/*"
+)
