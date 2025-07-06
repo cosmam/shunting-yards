@@ -72,7 +72,10 @@ namespace Operations {
             throw std::invalid_argument("Invalid value count; expected one");
         }
         
-        return std::abs(getValue<double>(values[0]));
+        if(std::holds_alternative<double>(values[0])) {
+            return std::abs(getValue<double>(values[0]));    
+        }
+        return std::abs(getValue<long>(values[0]));
     }
 
     auto ln(std::span<ValueType> values) -> ValueType

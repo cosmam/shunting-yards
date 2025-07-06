@@ -4,6 +4,7 @@ enable_testing()
 
 add_executable(
     ${PROJECT_NAME}
+    ${CMAKE_CURRENT_LIST_DIR}/operations-test.cpp
     ${CMAKE_CURRENT_LIST_DIR}/token-test.cpp
 )
 
