@@ -1,12 +1,13 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 
+#include "value_type.h"
+
 #include <functional>
 #include <span>
 #include <string>
 #include <variant>
 
-using ValueType = std::variant<int64_t, double, bool>;
 using CalcFunc = std::function<ValueType(std::span<ValueType>)>;
 
 class Token

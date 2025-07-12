@@ -9,6 +9,8 @@
 
 #include <iostream>
 
+using namespace EquationEvaluator;
+
 namespace {
 
     constexpr std::array<std::string, 45> Token_Names{"(", ")", "==", "!=", "/=", "<=", ">=", "~=", "+", "-", 

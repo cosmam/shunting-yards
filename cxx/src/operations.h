@@ -2,6 +2,7 @@
 #define OPERATIONS_H
 
 #include "token.h"
+#include "value_type.h"
 
 #include <span>
 

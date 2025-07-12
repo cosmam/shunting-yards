@@ -5,7 +5,7 @@ namespace {
 
     auto testCalcFunc(std::span<ValueType> values) -> ValueType
     {
-        return 0;
+        return ValueType(0L);
     }
 }
 
@@ -73,7 +73,7 @@ TEST(TokenTest, testEvaluateBool1)
 
     auto value = token.evaluate();
 
-    EXPECT_EQ(std::get<bool>(value), true);
+    EXPECT_EQ(value.get<bool>(), true);
 }
 
 TEST(TokenTest, testEvaluateBool2)
@@ -82,7 +82,7 @@ TEST(TokenTest, testEvaluateBool2)
 
     auto value = token.evaluate();
 
-    EXPECT_EQ(std::get<bool>(value), false);
+    EXPECT_EQ(value.get<bool>(), false);
 }
 
 class DoubleEvaluateSuite : public ::testing::TestWithParam<std::tuple<std::string, double>> {};
@@ -107,7 +107,7 @@ TEST_P(DoubleEvaluateSuite, testValidDoubleEvaluate)
 
     auto value = token.evaluate();
 
-    EXPECT_DOUBLE_EQ(std::get<double>(value), expected);
+    EXPECT_DOUBLE_EQ(value.get<double>(), expected);
 };
 
 TEST(TokenTest, testIntegerEvaluation)
@@ -116,7 +116,7 @@ TEST(TokenTest, testIntegerEvaluation)
 
     auto value = token.evaluate();
 
-    EXPECT_EQ(std::get<int64_t>(value), 12);    
+    EXPECT_EQ(value.get<int64_t>(), 12);    
 }
 
 TEST(TokenTest, testIntegerEvaluationLeadingZero)
@@ -125,5 +125,5 @@ TEST(TokenTest, testIntegerEvaluationLeadingZero)
 
     auto value = token.evaluate();
 
-    EXPECT_EQ(std::get<int64_t>(value), 123);    
+    EXPECT_EQ(value.get<int64_t>(), 123);    
 }
