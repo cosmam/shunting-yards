@@ -303,6 +303,60 @@ TEST(OperationsTest, testGreaterThanEqualsInvalidLong)
     EXPECT_THROW(Operations::greaterThanEquals(values), std::invalid_argument);
 }
 
+TEST(OperationsTest, testPlusInvalidShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::plus(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testPlusInvalidLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::plus(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testMinsInvalidShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::minus(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testMinsInvalidLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::minus(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testMultipliesInvalidShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::multiply(values), std::invalid_argument);
+
+    values.push_back(ValueType(0L));
+    EXPECT_THROW(Operations::multiply(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testMultipliesInvalidLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::multiply(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testDividesInvalidShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::divide(values), std::invalid_argument);
+
+    values.push_back(ValueType(0L));
+    EXPECT_THROW(Operations::divide(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testDividesInvalidLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::divide(values), std::invalid_argument);
+}
+
 class ComparisonOperationsSuite : public ::testing::TestWithParam<std::tuple<ValueType, ValueType>> {};
 
 INSTANTIATE_TEST_SUITE_P(ComparisonOperationsTest,
@@ -428,4 +482,70 @@ TEST_P(ComparisonOperationsSuite, testGreaterThanEquals)
     }
     EXPECT_TRUE(actual.holdsAlternative<bool>());
     EXPECT_EQ(actual.get<bool>(), expected);
+};
+
+TEST_P(ComparisonOperationsSuite, testBinaryPlus)
+{
+    auto values = GetParam();
+    std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
+    auto actual = Operations::plus(tokens);
+    ValueType expected;
+
+    if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
+        double left = tokens.at(0).get<double>();
+        double right = tokens.at(1).get<double>();
+        expected = (left + right);
+        EXPECT_TRUE(actual.holdsAlternative<double>());
+    } else {
+        int64_t left = tokens.at(0).get<int64_t>();
+        int64_t right = tokens.at(1).get<int64_t>();
+        expected = (left + right);
+        EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+    }
+    
+    EXPECT_EQ(actual, expected);
+};
+
+TEST_P(ComparisonOperationsSuite, testBinaryMinus)
+{
+    auto values = GetParam();
+    std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
+    auto actual = Operations::minus(tokens);
+    ValueType expected;
+
+    if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
+        double left = tokens.at(0).get<double>();
+        double right = tokens.at(1).get<double>();
+        expected = (left - right);
+        EXPECT_TRUE(actual.holdsAlternative<double>());
+    } else {
+        int64_t left = tokens.at(0).get<int64_t>();
+        int64_t right = tokens.at(1).get<int64_t>();
+        expected = (left - right);
+        EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+    }
+    
+    EXPECT_EQ(actual, expected);
+};
+
+TEST_P(ComparisonOperationsSuite, testBinaryMultiply)
+{
+    auto values = GetParam();
+    std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
+    auto actual = Operations::multiply(tokens);
+    ValueType expected;
+
+    if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
+        double left = tokens.at(0).get<double>();
+        double right = tokens.at(1).get<double>();
+        expected = (left * right);
+        EXPECT_TRUE(actual.holdsAlternative<double>());
+    } else {
+        int64_t left = tokens.at(0).get<int64_t>();
+        int64_t right = tokens.at(1).get<int64_t>();
+        expected = (left * right);
+        EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+    }
+    
+    EXPECT_EQ(actual, expected);
 };

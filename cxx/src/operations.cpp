@@ -176,10 +176,9 @@ namespace Operations {
         } else if(values.size() == 1) {
             return values[0];
         } else if(hasDouble(values)) {
-
-        } else {
-
+            return values[0].get<double>() + values[1].get<double>();
         }
+        return values[0].get<int64_t>() + values[1].get<int64_t>();
     }
 
     auto minus(std::span<ValueType> values) -> ValueType
@@ -189,10 +188,9 @@ namespace Operations {
         } else if(values.size() == 1) {
             return (hasDouble(values) ? ValueType(-1.0 * values[0].get<double>()) : ValueType(-1 * values[0].get<long>()));
         } else if(hasDouble(values)) {
-
-        } else {
-
+            return values[0].get<double>() - values[1].get<double>();
         }
+        return values[0].get<int64_t>() - values[1].get<int64_t>();
     }
 
     auto equals(std::span<ValueType> values) -> ValueType
@@ -244,10 +242,9 @@ namespace Operations {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
         } else if(hasDouble(values)) {
-
-        } else {
-
+            return values[0].get<double>() * values[1].get<double>();
         }
+        return values[0].get<int64_t>() * values[1].get<int64_t>();
     }
 
     auto divide(std::span<ValueType> values) -> ValueType
@@ -255,10 +252,9 @@ namespace Operations {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
         } else if(hasDouble(values)) {
-
-        } else {
-
+            return values[0].get<double>() / values[1].get<double>();
         }
+        return values[0].get<int64_t>() / values[1].get<int64_t>();
     }
 
     auto logicalAnd(std::span<ValueType> values) -> ValueType
@@ -298,10 +294,9 @@ namespace Operations {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
         } else if(hasDouble(values)) {
-
-        } else {
-
+            return std::min(values[0].get<double>(), values[1].get<double>());
         }
+        return std::min(values[0].get<int64_t>(), values[1].get<int64_t>());
     }
 
     auto max(std::span<ValueType> values) -> ValueType
@@ -309,10 +304,9 @@ namespace Operations {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
         } else if(hasDouble(values)) {
-
-        } else {
-
+            return std::max(values[0].get<double>(), values[1].get<double>());
         }
+        return std::max(values[0].get<int64_t>(), values[1].get<int64_t>());
     }
 
     auto power(std::span<ValueType> values) -> ValueType
