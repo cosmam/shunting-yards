@@ -252,25 +252,37 @@ namespace Operations {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
         } else if(hasDouble(values)) {
-            return values[0].get<double>() / values[1].get<double>();
+            auto divisor = values[1].get<double>();
+            if(divisor == 0.0) {
+                throw std::runtime_error("Divide by zero");
+            }
+            return values[0].get<double>() / divisor;
         }
-        return values[0].get<int64_t>() / values[1].get<int64_t>();
+        auto divisor = values[1].get<int64_t>();
+        if(divisor == 0) {
+            throw std::runtime_error("Divide by zero");
+        }
+        return values[0].get<int64_t>() / divisor;
     }
 
     auto logicalAnd(std::span<ValueType> values) -> ValueType
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
-        }
-        
+        } else if(hasDouble(values)) {
+            throw std::runtime_error("Bitwise operations not valid on doubles");
+        }        
+        return values[0].get<int64_t>() & values[1].get<int64_t>();
     }
 
     auto logicalOr(std::span<ValueType> values) -> ValueType
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
+        } else if(hasDouble(values)) {
+            throw std::runtime_error("Bitwise operations not valid on doubles");
         }
-        
+        return values[0].get<int64_t>() | values[1].get<int64_t>();
     }
 
     auto bitshiftLeft(std::span<ValueType> values) -> ValueType
