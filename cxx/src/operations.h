@@ -56,9 +56,11 @@ namespace Operations {
 
     auto divide(std::span<ValueType> values) -> ValueType;
 
-    auto logicalAnd(std::span<ValueType> values) -> ValueType;
+    auto bitwiseAnd(std::span<ValueType> values) -> ValueType;
 
-    auto logicalOr(std::span<ValueType> values) -> ValueType;
+    auto bitwiseOr(std::span<ValueType> values) -> ValueType;
+
+    auto bitwiseXor(std::span<ValueType> values) -> ValueType;
 
     auto bitshiftLeft(std::span<ValueType> values) -> ValueType;
 
@@ -74,9 +76,9 @@ namespace Operations {
 
     auto remainder(std::span<ValueType> values) -> ValueType;
 
-    auto bitwiseAnd(std::span<ValueType> values) -> ValueType;
+    auto logicalAnd(std::span<ValueType> values) -> ValueType;
 
-    auto bitwiseOr(std::span<ValueType> values) -> ValueType;
+    auto logicalOr(std::span<ValueType> values) -> ValueType;
 
     auto lessThan(std::span<ValueType> values) -> ValueType;
 

@@ -357,34 +357,49 @@ TEST(OperationsTest, testDividesInvalidLong)
     EXPECT_THROW(Operations::divide(values), std::invalid_argument);
 }
 
-TEST(OperationsTest, testLogicalAndInvalidShort)
+TEST(OperationsTest, testBitwiseAndInvalidShort)
 {
     std::vector<ValueType> values(0);
-    EXPECT_THROW(Operations::logicalAnd(values), std::invalid_argument);
+    EXPECT_THROW(Operations::bitwiseAnd(values), std::invalid_argument);
 
     values.push_back(ValueType(0L));
-    EXPECT_THROW(Operations::logicalAnd(values), std::invalid_argument);
+    EXPECT_THROW(Operations::bitwiseAnd(values), std::invalid_argument);
 }
 
-TEST(OperationsTest, testLogicalAndInvalidLong)
+TEST(OperationsTest, testBitwiseAndInvalidLong)
 {
     std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
-    EXPECT_THROW(Operations::logicalAnd(values), std::invalid_argument);
+    EXPECT_THROW(Operations::bitwiseAnd(values), std::invalid_argument);
 }
 
-TEST(OperationsTest, testLogicalOrInvalidShort)
+TEST(OperationsTest, testBitwiseOrInvalidShort)
 {
     std::vector<ValueType> values(0);
-    EXPECT_THROW(Operations::logicalOr(values), std::invalid_argument);
+    EXPECT_THROW(Operations::bitwiseOr(values), std::invalid_argument);
 
     values.push_back(ValueType(0L));
-    EXPECT_THROW(Operations::logicalOr(values), std::invalid_argument);
+    EXPECT_THROW(Operations::bitwiseOr(values), std::invalid_argument);
 }
 
-TEST(OperationsTest, testLogicalOrInvalidLong)
+TEST(OperationsTest, testBitwiseOrInvalidLong)
 {
     std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
-    EXPECT_THROW(Operations::logicalOr(values), std::invalid_argument);
+    EXPECT_THROW(Operations::bitwiseOr(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testBitwiseXorInvalidShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::bitwiseXor(values), std::invalid_argument);
+
+    values.push_back(ValueType(0L));
+    EXPECT_THROW(Operations::bitwiseXor(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testBitwiseXorInvalidLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::bitwiseXor(values), std::invalid_argument);
 }
 
 TEST(OperationsTest, testMinInvalidShort)
@@ -644,33 +659,49 @@ TEST_P(ComparisonOperationsSuite, testBinaryDivision)
     }  
 };    
     
-TEST_P(ComparisonOperationsSuite, testLogicalAnd)
+TEST_P(ComparisonOperationsSuite, testBitwiseAnd)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
 
     // for binary operations, doubles are not valid
     if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
-        EXPECT_THROW(Operations::logicalAnd(tokens), std::runtime_error);
+        EXPECT_THROW(Operations::bitwiseAnd(tokens), std::runtime_error);
     } else {
-        auto actual = Operations::logicalAnd(tokens);
+        auto actual = Operations::bitwiseAnd(tokens);
         ValueType expected = tokens.at(0).get<int64_t>() & tokens.at(1).get<int64_t>();
         EXPECT_TRUE(actual.holdsAlternative<int64_t>());
         EXPECT_EQ(actual, expected);
     }
 };
     
-TEST_P(ComparisonOperationsSuite, testLogicalOr)
+TEST_P(ComparisonOperationsSuite, testBitwiseOr)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
 
     // for binary operations, doubles are not valid
     if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
-        EXPECT_THROW(Operations::logicalOr(tokens), std::runtime_error);
+        EXPECT_THROW(Operations::bitwiseOr(tokens), std::runtime_error);
     } else {
-        auto actual = Operations::logicalOr(tokens);
+        auto actual = Operations::bitwiseOr(tokens);
         ValueType expected = tokens.at(0).get<int64_t>() | tokens.at(1).get<int64_t>();
+        EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+        EXPECT_EQ(actual, expected);
+    }
+};
+    
+TEST_P(ComparisonOperationsSuite, testBitwiseXor)
+{
+    auto values = GetParam();
+    std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
+
+    // for binary operations, doubles are not valid
+    if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
+        EXPECT_THROW(Operations::bitwiseXor(tokens), std::runtime_error);
+    } else {
+        auto actual = Operations::bitwiseXor(tokens);
+        ValueType expected = tokens.at(0).get<int64_t>() ^ tokens.at(1).get<int64_t>();
         EXPECT_TRUE(actual.holdsAlternative<int64_t>());
         EXPECT_EQ(actual, expected);
     }

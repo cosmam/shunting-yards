@@ -39,7 +39,7 @@ namespace {
         tokens.emplace(std::make_pair(Token_Names.at(10), Token(Token_Names.at(10), Token::TokenType::Operator, &Operations::power, 5, 2)));
         tokens.emplace(std::make_pair(Token_Names.at(11), Token(Token_Names.at(11), Token::TokenType::Operator, &Operations::multiply, 5, 2)));
         tokens.emplace(std::make_pair(Token_Names.at(12), Token(Token_Names.at(12), Token::TokenType::Operator, &Operations::divide, 5, 2)));
-        tokens.emplace(std::make_pair(Token_Names.at(13), Token(Token_Names.at(13), Token::TokenType::Operator, &Operations::power, 4, 2)));
+        tokens.emplace(std::make_pair(Token_Names.at(13), Token(Token_Names.at(13), Token::TokenType::Operator, &Operations::bitwiseXor, 4, 2)));
         tokens.emplace(std::make_pair(Token_Names.at(14), Token(Token_Names.at(14), Token::TokenType::Operator, &Operations::modulo, 5, 2)));
         tokens.emplace(std::make_pair(Token_Names.at(15), Token(Token_Names.at(15), Token::TokenType::Operator, &Operations::logicalAnd, 14, 2)));
         tokens.emplace(std::make_pair(Token_Names.at(16), Token(Token_Names.at(16), Token::TokenType::Operator, &Operations::logicalOr, 15, 2)));

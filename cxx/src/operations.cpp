@@ -265,7 +265,7 @@ namespace Operations {
         return values[0].get<int64_t>() / divisor;
     }
 
-    auto logicalAnd(std::span<ValueType> values) -> ValueType
+    auto bitwiseAnd(std::span<ValueType> values) -> ValueType
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
@@ -275,7 +275,7 @@ namespace Operations {
         return values[0].get<int64_t>() & values[1].get<int64_t>();
     }
 
-    auto logicalOr(std::span<ValueType> values) -> ValueType
+    auto bitwiseOr(std::span<ValueType> values) -> ValueType
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
@@ -283,6 +283,16 @@ namespace Operations {
             throw std::runtime_error("Bitwise operations not valid on doubles");
         }
         return values[0].get<int64_t>() | values[1].get<int64_t>();
+    }
+
+    auto bitwiseXor(std::span<ValueType> values) -> ValueType
+    {
+        if(values.size() != 2) {
+            throw std::invalid_argument("Invalid value count; expected two");
+        } else if(hasDouble(values)) {
+            throw std::runtime_error("Bitwise operations not valid on doubles");
+        }
+        return values[0].get<int64_t>() ^ values[1].get<int64_t>();
     }
 
     auto bitshiftLeft(std::span<ValueType> values) -> ValueType
@@ -348,7 +358,7 @@ namespace Operations {
         
     }
 
-    auto bitwiseAnd(std::span<ValueType> values) -> ValueType
+    auto logicalAnd(std::span<ValueType> values) -> ValueType
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
@@ -356,7 +366,7 @@ namespace Operations {
         
     }
 
-    auto bitwiseOr(std::span<ValueType> values) -> ValueType
+    auto logicalOr(std::span<ValueType> values) -> ValueType
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
