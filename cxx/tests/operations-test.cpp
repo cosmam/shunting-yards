@@ -8,7 +8,8 @@
 
 namespace {
     
-    constexpr double pi = std::numbers::pi;
+    constexpr double tau = 2.0 * std::numbers::pi;
+    constexpr double Radians_Per_Degree = tau / 360.0;
 
     const std::vector<ValueType> All_Value_Types{ValueType(-11.2), ValueType(-1.2), ValueType(0.0), ValueType(2.1), ValueType(20.1), 
         ValueType(-11L), ValueType(-3L), ValueType(0L), ValueType(4L), ValueType(32L), ValueType(true), ValueType(false)};
@@ -159,7 +160,7 @@ class TrigOperationsSuite : public ::testing::TestWithParam<ValueType> {};
 
 INSTANTIATE_TEST_SUITE_P(TrigOperationsTest,
                          TrigOperationsSuite,
-                         testing::Values(ValueType(-2.0 * pi), ValueType(-1.0 * pi), ValueType(0.0), ValueType(pi), ValueType(2.0 * pi), 
+                         testing::Values(ValueType(-1.0 * tau), ValueType(-0.5 * tau), ValueType(0.0), ValueType(0.5 * tau), ValueType(tau), 
                                          ValueType(0L), ValueType(2L), ValueType(-1L), ValueType(12L), ValueType(true), ValueType(false)));
 
 TEST_P(TrigOperationsSuite, testCos)
@@ -531,20 +532,20 @@ TEST(OperationsTest, testPowInvalidShort)
     EXPECT_THROW(Operations::power(values), std::invalid_argument);
 }
 
-TEST(OperationsTest, tesPowInvalidLong)
+TEST(OperationsTest, testPowInvalidLong)
 {
     std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
     EXPECT_THROW(Operations::power(values), std::invalid_argument);
 }
 
-class ComparisonOperationsSuite : public ::testing::TestWithParam<std::tuple<ValueType, ValueType>> {};
+class TwoValuesSuite : public ::testing::TestWithParam<std::tuple<ValueType, ValueType>> {};
 
-INSTANTIATE_TEST_SUITE_P(ComparisonOperationsTest,
-                         ComparisonOperationsSuite,
+INSTANTIATE_TEST_SUITE_P(TwoValuesTest,
+                         TwoValuesSuite,
                          testing::Combine(testing::ValuesIn(All_Value_Types),
                                           testing::ValuesIn(All_Value_Types)));;
 
-TEST_P(ComparisonOperationsSuite, testEquals)
+TEST_P(TwoValuesSuite, testEquals)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -564,7 +565,7 @@ TEST_P(ComparisonOperationsSuite, testEquals)
     EXPECT_EQ(actual.get<bool>(), expected);
 };
 
-TEST_P(ComparisonOperationsSuite, testNotEquals)
+TEST_P(TwoValuesSuite, testNotEquals)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -584,7 +585,7 @@ TEST_P(ComparisonOperationsSuite, testNotEquals)
     EXPECT_EQ(actual.get<bool>(), expected);
 };
 
-TEST_P(ComparisonOperationsSuite, testLessThan)
+TEST_P(TwoValuesSuite, testLessThan)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -604,7 +605,7 @@ TEST_P(ComparisonOperationsSuite, testLessThan)
     EXPECT_EQ(actual.get<bool>(), expected);
 };
 
-TEST_P(ComparisonOperationsSuite, testLessThanEquals)
+TEST_P(TwoValuesSuite, testLessThanEquals)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -624,7 +625,7 @@ TEST_P(ComparisonOperationsSuite, testLessThanEquals)
     EXPECT_EQ(actual.get<bool>(), expected);
 };
 
-TEST_P(ComparisonOperationsSuite, testGreaterThan)
+TEST_P(TwoValuesSuite, testGreaterThan)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -644,7 +645,7 @@ TEST_P(ComparisonOperationsSuite, testGreaterThan)
     EXPECT_EQ(actual.get<bool>(), expected);
 };
 
-TEST_P(ComparisonOperationsSuite, testGreaterThanEquals)
+TEST_P(TwoValuesSuite, testGreaterThanEquals)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -664,7 +665,7 @@ TEST_P(ComparisonOperationsSuite, testGreaterThanEquals)
     EXPECT_EQ(actual.get<bool>(), expected);
 };
 
-TEST_P(ComparisonOperationsSuite, testBinaryPlus)
+TEST_P(TwoValuesSuite, testBinaryPlus)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -686,7 +687,7 @@ TEST_P(ComparisonOperationsSuite, testBinaryPlus)
     EXPECT_EQ(actual, expected);
 };
 
-TEST_P(ComparisonOperationsSuite, testBinaryMinus)
+TEST_P(TwoValuesSuite, testBinaryMinus)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -708,7 +709,7 @@ TEST_P(ComparisonOperationsSuite, testBinaryMinus)
     EXPECT_EQ(actual, expected);
 };
 
-TEST_P(ComparisonOperationsSuite, testMultiply)
+TEST_P(TwoValuesSuite, testMultiply)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -730,7 +731,7 @@ TEST_P(ComparisonOperationsSuite, testMultiply)
     EXPECT_EQ(actual, expected);
 };
 
-TEST_P(ComparisonOperationsSuite, testDivision)
+TEST_P(TwoValuesSuite, testDivision)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -764,7 +765,7 @@ TEST_P(ComparisonOperationsSuite, testDivision)
     }  
 };    
     
-TEST_P(ComparisonOperationsSuite, testBitwiseAnd)
+TEST_P(TwoValuesSuite, testBitwiseAnd)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -780,7 +781,7 @@ TEST_P(ComparisonOperationsSuite, testBitwiseAnd)
     }
 };
     
-TEST_P(ComparisonOperationsSuite, testBitwiseOr)
+TEST_P(TwoValuesSuite, testBitwiseOr)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -796,7 +797,7 @@ TEST_P(ComparisonOperationsSuite, testBitwiseOr)
     }
 };
     
-TEST_P(ComparisonOperationsSuite, testBitwiseXor)
+TEST_P(TwoValuesSuite, testBitwiseXor)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -812,7 +813,7 @@ TEST_P(ComparisonOperationsSuite, testBitwiseXor)
     }
 };
 
-TEST_P(ComparisonOperationsSuite, testMin)
+TEST_P(TwoValuesSuite, testMin)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -834,7 +835,7 @@ TEST_P(ComparisonOperationsSuite, testMin)
     EXPECT_EQ(actual, expected);
 };
 
-TEST_P(ComparisonOperationsSuite, testMax)
+TEST_P(TwoValuesSuite, testMax)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -856,7 +857,7 @@ TEST_P(ComparisonOperationsSuite, testMax)
     EXPECT_EQ(actual, expected);
 };
 
-TEST_P(ComparisonOperationsSuite, testLogicalAnd)
+TEST_P(TwoValuesSuite, testLogicalAnd)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -870,7 +871,7 @@ TEST_P(ComparisonOperationsSuite, testLogicalAnd)
     EXPECT_EQ(actual, expected);
 };
 
-TEST_P(ComparisonOperationsSuite, testLogicalOr)
+TEST_P(TwoValuesSuite, testLogicalOr)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -884,7 +885,7 @@ TEST_P(ComparisonOperationsSuite, testLogicalOr)
     EXPECT_EQ(actual, expected);
 };
 
-TEST_P(ComparisonOperationsSuite, testModulo)
+TEST_P(TwoValuesSuite, testModulo)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -918,7 +919,7 @@ TEST_P(ComparisonOperationsSuite, testModulo)
     }  
 }; 
 
-TEST_P(ComparisonOperationsSuite, testRemainder)
+TEST_P(TwoValuesSuite, testRemainder)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -952,7 +953,7 @@ TEST_P(ComparisonOperationsSuite, testRemainder)
     }  
 }; 
 
-TEST_P(ComparisonOperationsSuite, testBitshiftLeft)
+TEST_P(TwoValuesSuite, testBitshiftLeft)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -968,7 +969,7 @@ TEST_P(ComparisonOperationsSuite, testBitshiftLeft)
     }
 };
 
-TEST_P(ComparisonOperationsSuite, testBitshiftRight)
+TEST_P(TwoValuesSuite, testBitshiftRight)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -984,7 +985,7 @@ TEST_P(ComparisonOperationsSuite, testBitshiftRight)
     }
 };
 
-TEST_P(ComparisonOperationsSuite, testPower)
+TEST_P(TwoValuesSuite, testPower)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -1029,4 +1030,191 @@ TEST_P(ComparisonOperationsSuite, testPower)
             EXPECT_EQ(actual, expected);
         }
     }
+};
+
+TEST(OperationsTest, testLnInvalidShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::ln(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testLnInvalidLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::ln(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testLogInvalidShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::log(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testLogInvalidLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::log(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testExpInvalidShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::exp(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testExpInvalidLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::exp(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testDegreeInvalidShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::degree(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testDegreeInvalidLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::degree(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testLogicalNotInvalidShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::logicalNot(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testLogicalNotInvalidLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::logicalNot(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testBitwiseNotInvalidShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::bitwiseNot(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testBitwiseNotInvalidLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::bitwiseNot(values), std::invalid_argument);
+}
+
+class OneValueSuite : public ::testing::TestWithParam<ValueType> {};
+
+INSTANTIATE_TEST_SUITE_P(OneValueTest,
+                         OneValueSuite,
+                         testing::ValuesIn(All_Value_Types));;
+
+TEST_P(OneValueSuite, testUnaryPlus)
+{
+    auto value = GetParam();
+    std::vector<ValueType> tokens{value};
+    auto actual = Operations::plus(tokens);
+    ValueType expected;
+
+    if(value.holdsAlternative<double>()) {
+        EXPECT_TRUE(actual.holdsAlternative<double>());
+        expected = value;
+    } else {
+        EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+        expected = value;
+    }
+    EXPECT_EQ(actual, expected);
+};
+
+TEST_P(OneValueSuite, testUnaryMinus)
+{
+    auto value = GetParam();
+    std::vector<ValueType> tokens{value};
+    auto actual = Operations::minus(tokens);
+    ValueType expected;
+
+    if(value.holdsAlternative<double>()) {
+        EXPECT_TRUE(actual.holdsAlternative<double>());
+        expected = -1.0 * value.get<double>();
+    } else {
+        EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+        expected = -1 * value.get<int64_t>();
+    }
+    EXPECT_EQ(actual, expected);
+};
+
+TEST_P(OneValueSuite, testAbs)
+{
+    auto value = GetParam();
+    std::vector<ValueType> tokens{value};
+    auto actual = Operations::abs(tokens);
+    ValueType expected;
+
+    if(value.holdsAlternative<double>()) {
+        EXPECT_TRUE(actual.holdsAlternative<double>());
+        expected = std::abs(value.get<double>());
+    } else {
+        EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+        expected = std::abs(value.get<int64_t>());
+    }
+    EXPECT_EQ(actual, expected);
+};
+
+TEST_P(OneValueSuite, testLn)
+{
+    auto value = GetParam();
+    std::vector<ValueType> tokens{value};
+
+    double exp = value.get<double>();
+
+    if(exp <= 0.0) {
+        EXPECT_THROW(Operations::ln(tokens), std::runtime_error);
+    } else {
+        auto actual = Operations::ln(tokens);
+        ValueType expected = std::log(exp);
+        EXPECT_TRUE(actual.holdsAlternative<double>());
+        EXPECT_EQ(actual, expected);
+    }
+};
+
+TEST_P(OneValueSuite, testUnaryLog)
+{
+    auto value = GetParam();
+    std::vector<ValueType> tokens{value};
+
+    double exp = value.get<double>();
+
+    if(exp <= 0.0) {
+        EXPECT_THROW(Operations::log(tokens), std::runtime_error);
+    } else {
+        auto actual = Operations::log(tokens);
+        ValueType expected = std::log10(exp);
+        EXPECT_TRUE(actual.holdsAlternative<double>());
+        EXPECT_EQ(actual, expected);
+    }
+};
+
+TEST_P(OneValueSuite, testExp)
+{
+    auto value = GetParam();
+    std::vector<ValueType> tokens{value};
+
+    double exp = value.get<double>();
+
+    auto actual = Operations::exp(tokens);
+    ValueType expected = std::exp(exp);
+    EXPECT_TRUE(actual.holdsAlternative<double>());
+    EXPECT_EQ(actual, expected);
+};
+
+TEST_P(OneValueSuite, testDegrees)
+{
+    auto value = GetParam();
+    std::vector<ValueType> tokens{value};
+
+    auto actual = Operations::degree(tokens);
+    ValueType expected = value.get<double>() * Radians_Per_Degree;
+    EXPECT_TRUE(actual.holdsAlternative<double>());
+    EXPECT_EQ(actual, expected);
 };

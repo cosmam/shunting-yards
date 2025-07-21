@@ -20,6 +20,8 @@ namespace Operations {
 
     auto log(std::span<ValueType> values) -> ValueType;
 
+    auto exp(std::span<ValueType> values) -> ValueType;
+
     auto degree(std::span<ValueType> values) -> ValueType;
 
     auto logicalNot(std::span<ValueType> values) -> ValueType;

@@ -8,7 +8,7 @@
 
 namespace {
 
-    constexpr double Radians_Per_Degree = 6.283185307179586 / 360.0;
+    constexpr double Radians_Per_Degree = 2.0 * std::numbers::pi / 360.0;
 
     auto hasDouble(std::span<ValueType> values) -> bool
     {
@@ -54,7 +54,7 @@ namespace Operations {
         if(hasDouble(values)) {
             return std::abs(values[0].get<double>());    
         }
-        return std::abs(values[0].get<long>());
+        return std::abs(values[0].get<int64_t>());
     }
 
     auto ln(std::span<ValueType> values) -> ValueType
@@ -62,17 +62,35 @@ namespace Operations {
         if(values.size() != 1) {
             throw std::invalid_argument("Invalid value count; expected one");
         }
-        
-        return std::log(values[0].get<double>());
+
+        auto value = values[0].get<double>();
+        if(value <= 0.0) {
+            throw std::runtime_error("Invalid parameter to ln function");
+        }
+        return std::log(value);
     }
 
+    // TODO: should have an alternate form to specify base
     auto log(std::span<ValueType> values) -> ValueType
     {
         if(values.size() != 1) {
             throw std::invalid_argument("Invalid value count; expected one");
         }
-        
-        return std::log10(values[0].get<double>());
+
+        auto value = values[0].get<double>();
+        if(value <= 0.0) {
+            throw std::runtime_error("Invalid parameter to ln function");
+        }
+        return std::log10(value);
+    }
+
+    auto exp(std::span<ValueType> values) -> ValueType
+    {
+        if(values.size() != 1) {
+            throw std::invalid_argument("Invalid value count; expected one");
+        }
+
+        return std::exp(values[0].get<double>());
     }
 
     auto degree(std::span<ValueType> values) -> ValueType
@@ -135,7 +153,7 @@ namespace Operations {
             return std::lround(values[0].get<double>());
         } else if(values[1].holdsAlternative<double>()) {
             
-        } else if(values[1].holdsAlternative<long>()) {
+        } else if(values[1].holdsAlternative<int64_t>()) {
 
         }
         throw std::invalid_argument("Bool type not supported for operation");
@@ -149,7 +167,7 @@ namespace Operations {
 
         } else if(values[1].holdsAlternative<double>()) {
             
-        } else if(values[1].holdsAlternative<long>()) {
+        } else if(values[1].holdsAlternative<int64_t>()) {
 
         }
         throw std::invalid_argument("Bool type not supported for operation");
@@ -163,7 +181,7 @@ namespace Operations {
 
         } else if(values[1].holdsAlternative<double>()) {
             
-        } else if(values[1].holdsAlternative<long>()) {
+        } else if(values[1].holdsAlternative<int64_t>()) {
 
         }
         throw std::invalid_argument("Bool type not supported for operation");
@@ -174,7 +192,7 @@ namespace Operations {
         if(values.size() == 0 || values.size() > 2) {
             throw std::invalid_argument("Invalid value count; expected one or two");
         } else if(values.size() == 1) {
-            return values[0];
+            return (hasDouble(values) ? ValueType(values[0].get<double>()) : ValueType(values[0].get<int64_t>()));
         } else if(hasDouble(values)) {
             return values[0].get<double>() + values[1].get<double>();
         }
@@ -186,7 +204,7 @@ namespace Operations {
         if(values.size() == 0 || values.size() > 2) {
             throw std::invalid_argument("Invalid value count; expected one or two");
         } else if(values.size() == 1) {
-            return (hasDouble(values) ? ValueType(-1.0 * values[0].get<double>()) : ValueType(-1 * values[0].get<long>()));
+            return (hasDouble(values) ? ValueType(-1.0 * values[0].get<double>()) : ValueType(-1 * values[0].get<int64_t>()));
         } else if(hasDouble(values)) {
             return values[0].get<double>() - values[1].get<double>();
         }
