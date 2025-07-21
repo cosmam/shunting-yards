@@ -299,16 +299,20 @@ namespace Operations {
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
+        } else if(hasDouble(values)) {
+            throw std::runtime_error("Bitwise operations not valid on doubles");
         }
-        
+        return values[0].get<int64_t>() << values[1].get<int64_t>();
     }
 
     auto bitshiftRight(std::span<ValueType> values) -> ValueType
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
+        } else if(hasDouble(values)) {
+            throw std::runtime_error("Bitwise operations not valid on doubles");
         }
-        
+        return values[0].get<int64_t>() >> values[1].get<int64_t>();
     }
 
     auto min(std::span<ValueType> values) -> ValueType
@@ -335,10 +339,38 @@ namespace Operations {
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
-        } else if(hasDouble(values)) {
+        } else if(values[1].holdsAlternative<double>()) {
+            auto base = values[0].get<double>();
+            auto exp = values[1].get<double>();
+            if(base == 0.0 && exp <= 0.0) {
+                throw std::runtime_error("Can't raise zero to a power less than or equal to zero");
+            } else if(base < 0.0) {
+                throw std::runtime_error("Can't raise negative floating point value to non-integer value");
+            }
+            return std::pow(base, exp);
+        } else if(values[0].holdsAlternative<double>()) {
+            auto base = values[0].get<double>();
+            auto exp = values[1].get<int64_t>();
+            if(base == 0.0 && exp <= 0) {
+                throw std::runtime_error("Can't raise zero to a power less than or equal to zero");
+            }
+            return (double)std::pow(base, exp);
+        }
+        auto base = values[0].get<int64_t>();
+        auto exp = values[1].get<int64_t>();
+        if(base == 0 && exp <= 0) {
+            throw std::runtime_error("Can't raise zero to a power less than or equal to zero");
+        }
 
+        if(exp < 0) {
+            return std::pow(base, exp);
         } else {
-
+            auto result = std::pow(base, exp);
+            if(result > (double)std::numeric_limits<int64_t>::max()) {
+                return (double)result;
+            } else {
+                return (int64_t)result;
+            }
         }
     }
 
@@ -346,16 +378,36 @@ namespace Operations {
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
+        } else if(hasDouble(values)) {
+            auto divisor = values[1].get<double>();
+            if(divisor == 0.0) {
+                throw std::runtime_error("Divide by zero");
+            }
+            return std::fmod(values[0].get<double>(), divisor);
         }
-        
+        auto divisor = values[1].get<int64_t>();
+        if(divisor == 0) {
+            throw std::runtime_error("Divide by zero");
+        }
+        return (int64_t)(values[0].get<int64_t>() % divisor);
     }
 
     auto remainder(std::span<ValueType> values) -> ValueType
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
+        } else if(hasDouble(values)) {
+            auto divisor = values[1].get<double>();
+            if(divisor == 0.0) {
+                throw std::runtime_error("Divide by zero");
+            }
+            return std::remainder(values[0].get<double>(), divisor);
         }
-        
+        auto divisor = values[1].get<int64_t>();
+        if(divisor == 0) {
+            throw std::runtime_error("Divide by zero");
+        }
+        return (int64_t)std::remainder(values[0].get<int64_t>(), divisor);
     }
 
     auto logicalAnd(std::span<ValueType> values) -> ValueType
@@ -363,7 +415,7 @@ namespace Operations {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
         }
-        
+        return values[0].get<bool>() && values[1].get<bool>();
     }
 
     auto logicalOr(std::span<ValueType> values) -> ValueType
@@ -371,7 +423,7 @@ namespace Operations {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
         }
-        
+        return values[0].get<bool>() || values[1].get<bool>();
     }
 
     auto lessThan(std::span<ValueType> values) -> ValueType

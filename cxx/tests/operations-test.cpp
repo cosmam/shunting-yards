@@ -432,6 +432,111 @@ TEST(OperationsTest, testMaxInvalidLong)
     EXPECT_THROW(Operations::max(values), std::invalid_argument);
 }
 
+TEST(OperationsTest, testLogicalAndInvalidShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::logicalAnd(values), std::invalid_argument);
+
+    values.push_back(ValueType(0L));
+    EXPECT_THROW(Operations::logicalAnd(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testLogicalAndInvalidLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::logicalAnd(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testLogicalOrInvalidShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::logicalOr(values), std::invalid_argument);
+
+    values.push_back(ValueType(0L));
+    EXPECT_THROW(Operations::logicalOr(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testLogicalOrInvalidLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::logicalOr(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testModuloInvalidShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::modulo(values), std::invalid_argument);
+
+    values.push_back(ValueType(0L));
+    EXPECT_THROW(Operations::modulo(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testModuloInvalidLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::modulo(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testRemainderInvalidShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::remainder(values), std::invalid_argument);
+
+    values.push_back(ValueType(0L));
+    EXPECT_THROW(Operations::remainder(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testRemainderInvalidLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::remainder(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testBitshiftLeftInvalidShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::bitshiftLeft(values), std::invalid_argument);
+
+    values.push_back(ValueType(0L));
+    EXPECT_THROW(Operations::bitshiftLeft(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testBitshiftLeftInvalidLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::bitshiftLeft(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testBitshiftRightInvalidShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::bitshiftRight(values), std::invalid_argument);
+
+    values.push_back(ValueType(0L));
+    EXPECT_THROW(Operations::bitshiftRight(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testBitshiftRightInvalidLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::bitshiftRight(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testPowInvalidShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::power(values), std::invalid_argument);
+
+    values.push_back(ValueType(0L));
+    EXPECT_THROW(Operations::power(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, tesPowInvalidLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::power(values), std::invalid_argument);
+}
+
 class ComparisonOperationsSuite : public ::testing::TestWithParam<std::tuple<ValueType, ValueType>> {};
 
 INSTANTIATE_TEST_SUITE_P(ComparisonOperationsTest,
@@ -603,7 +708,7 @@ TEST_P(ComparisonOperationsSuite, testBinaryMinus)
     EXPECT_EQ(actual, expected);
 };
 
-TEST_P(ComparisonOperationsSuite, testBinaryMultiply)
+TEST_P(ComparisonOperationsSuite, testMultiply)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -625,7 +730,7 @@ TEST_P(ComparisonOperationsSuite, testBinaryMultiply)
     EXPECT_EQ(actual, expected);
 };
 
-TEST_P(ComparisonOperationsSuite, testBinaryDivision)
+TEST_P(ComparisonOperationsSuite, testDivision)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
@@ -749,4 +854,179 @@ TEST_P(ComparisonOperationsSuite, testMax)
     }
     
     EXPECT_EQ(actual, expected);
+};
+
+TEST_P(ComparisonOperationsSuite, testLogicalAnd)
+{
+    auto values = GetParam();
+    std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
+    auto actual = Operations::logicalAnd(tokens);
+    ValueType expected;
+
+    bool left = tokens.at(0).get<bool>();
+    bool right = tokens.at(1).get<bool>();
+    expected = left && right;
+    EXPECT_TRUE(actual.holdsAlternative<bool>());    
+    EXPECT_EQ(actual, expected);
+};
+
+TEST_P(ComparisonOperationsSuite, testLogicalOr)
+{
+    auto values = GetParam();
+    std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
+    auto actual = Operations::logicalOr(tokens);
+    ValueType expected;
+
+    bool left = tokens.at(0).get<bool>();
+    bool right = tokens.at(1).get<bool>();
+    expected = left || right;
+    EXPECT_TRUE(actual.holdsAlternative<bool>());    
+    EXPECT_EQ(actual, expected);
+};
+
+TEST_P(ComparisonOperationsSuite, testModulo)
+{
+    auto values = GetParam();
+    std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
+    bool error_expected = false;
+    ValueType expected;
+
+    if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
+        double left = tokens.at(0).get<double>();
+        double right = tokens.at(1).get<double>();
+
+        if(right == 0.0) {
+            EXPECT_THROW(Operations::modulo(tokens), std::runtime_error);
+        } else {
+            auto actual = Operations::modulo(tokens);
+            expected = std::fmod(left, right);
+            EXPECT_TRUE(actual.holdsAlternative<double>());
+            EXPECT_EQ(actual, expected);
+        }
+    } else {
+        int64_t left = tokens.at(0).get<int64_t>();
+        int64_t right = tokens.at(1).get<int64_t>();
+
+        if(right == 0) {
+            EXPECT_THROW(Operations::modulo(tokens), std::runtime_error);
+        } else {
+            auto actual = Operations::modulo(tokens);
+            expected = (left % right);
+            EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+            EXPECT_EQ(actual, expected);
+        }
+    }  
+}; 
+
+TEST_P(ComparisonOperationsSuite, testRemainder)
+{
+    auto values = GetParam();
+    std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
+    bool error_expected = false;
+    ValueType expected;
+
+    if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
+        double left = tokens.at(0).get<double>();
+        double right = tokens.at(1).get<double>();
+
+        if(right == 0.0) {
+            EXPECT_THROW(Operations::remainder(tokens), std::runtime_error);
+        } else {
+            auto actual = Operations::remainder(tokens);
+            expected = std::remainder(left, right);
+            EXPECT_TRUE(actual.holdsAlternative<double>());
+            EXPECT_EQ(actual, expected);
+        }
+    } else {
+        int64_t left = tokens.at(0).get<int64_t>();
+        int64_t right = tokens.at(1).get<int64_t>();
+
+        if(right == 0) {
+            EXPECT_THROW(Operations::remainder(tokens), std::runtime_error);
+        } else {
+            auto actual = Operations::remainder(tokens);
+            expected = std::remainder(left, right);
+            EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+            EXPECT_EQ(actual, expected);
+        }
+    }  
+}; 
+
+TEST_P(ComparisonOperationsSuite, testBitshiftLeft)
+{
+    auto values = GetParam();
+    std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
+
+    // for binary operations, doubles are not valid
+    if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
+        EXPECT_THROW(Operations::bitshiftLeft(tokens), std::runtime_error);
+    } else {
+        auto actual = Operations::bitshiftLeft(tokens);
+        ValueType expected = tokens.at(0).get<int64_t>() << tokens.at(1).get<int64_t>();
+        EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+        EXPECT_EQ(actual, expected);
+    }
+};
+
+TEST_P(ComparisonOperationsSuite, testBitshiftRight)
+{
+    auto values = GetParam();
+    std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
+
+    // for binary operations, doubles are not valid
+    if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
+        EXPECT_THROW(Operations::bitshiftRight(tokens), std::runtime_error);
+    } else {
+        auto actual = Operations::bitshiftRight(tokens);
+        ValueType expected = tokens.at(0).get<int64_t>() >> tokens.at(1).get<int64_t>();
+        EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+        EXPECT_EQ(actual, expected);
+    }
+};
+
+TEST_P(ComparisonOperationsSuite, testPower)
+{
+    auto values = GetParam();
+    std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
+
+    if(tokens.at(1).holdsAlternative<double>()) {
+        double left = tokens.at(0).get<double>();
+        double right = tokens.at(1).get<double>();
+        if(left == 0.0 && right <= 0.0) {
+            EXPECT_THROW(Operations::power(tokens), std::runtime_error);
+        } else if(left < 0.0) {
+            EXPECT_THROW(Operations::power(tokens), std::runtime_error);
+        } else {
+            auto actual = Operations::power(tokens);
+            ValueType expected = std::pow(left, right);
+            EXPECT_TRUE(actual.holdsAlternative<double>());
+            EXPECT_EQ(actual, expected);
+        }
+    } else if(tokens.at(0).holdsAlternative<double>()) {
+        double left = tokens.at(0).get<double>();
+        int64_t right = tokens.at(1).get<int64_t>();
+        if(left == 0.0 && right <= 0) {
+            EXPECT_THROW(Operations::power(tokens), std::runtime_error);
+        } else {
+            auto actual = Operations::power(tokens);
+            ValueType expected = std::pow(left, right);
+            EXPECT_TRUE(actual.holdsAlternative<double>());
+            EXPECT_EQ(actual, expected);
+        }
+    } else {
+        int64_t left = tokens.at(0).get<int64_t>();
+        int64_t right = tokens.at(1).get<int64_t>();
+        if(left == 0 && right <= 0) {
+            EXPECT_THROW(Operations::power(tokens), std::runtime_error);
+        } else {
+            auto actual = Operations::power(tokens);
+            ValueType expected = std::pow(left, right);
+            if(right < 0 || expected.get<double>() > (double)std::numeric_limits<int64_t>::max()) {
+                EXPECT_TRUE(actual.holdsAlternative<double>());
+            } else {
+                EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+            }
+            EXPECT_EQ(actual, expected);
+        }
+    }
 };
