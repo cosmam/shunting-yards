@@ -70,11 +70,18 @@ namespace Operations {
         return std::log(value);
     }
 
-    // TODO: should have an alternate form to specify base
     auto log(std::span<ValueType> values) -> ValueType
     {
-        if(values.size() != 1) {
-            throw std::invalid_argument("Invalid value count; expected one");
+        if(values.size() == 0 || values.size() > 2) {
+            throw std::invalid_argument("Invalid value count; expected one or two");
+        }
+
+        if(values.size() == 2) {
+            auto divisor =  ln(values.subspan(1,1)).get<double>();
+            if(divisor == 0.0) {
+                throw std::runtime_error("Division by zero in binary log computation");
+            }
+            return ln(values.subspan(0,1)).get<double>() / divisor;
         }
 
         auto value = values[0].get<double>();
@@ -107,15 +114,17 @@ namespace Operations {
         if(values.size() != 1) {
             throw std::invalid_argument("Invalid value count; expected one");
         }
-        
+        return !values[0].get<bool>();
     }
 
     auto bitwiseNot(std::span<ValueType> values) -> ValueType
     {
         if(values.size() != 1) {
             throw std::invalid_argument("Invalid value count; expected one");
-        }
-        
+        } else if(hasDouble(values)) {
+            throw std::runtime_error("Bitwise operations not valid on doubles");
+        }   
+        return ~values[0].get<int64_t>();
     }
 
     auto cos(std::span<ValueType> values) -> ValueType

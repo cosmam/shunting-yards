@@ -538,6 +538,54 @@ TEST(OperationsTest, testPowInvalidLong)
     EXPECT_THROW(Operations::power(values), std::invalid_argument);
 }
 
+TEST(OperationsTest, testLogInvalidShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::log(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testLogInvalidLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::log(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testRoundInvalidShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::round(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testRoundInvalidLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::round(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testCeilingInvalidShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::ceiling(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testCeilingInvalidLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::ceiling(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testFloorInvalidShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::floor(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testFloorInvalidLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::floor(values), std::invalid_argument);
+}
+
 class TwoValuesSuite : public ::testing::TestWithParam<std::tuple<ValueType, ValueType>> {};
 
 INSTANTIATE_TEST_SUITE_P(TwoValuesTest,
@@ -1032,6 +1080,29 @@ TEST_P(TwoValuesSuite, testPower)
     }
 };
 
+TEST_P(TwoValuesSuite, testBinaryLog)
+{
+    auto values = GetParam();
+    std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
+
+    auto v1 = tokens[0].get<double>();
+    auto v2 = tokens[1].get<double>();
+
+    if(v1 <= 0.0 || v2 <= 0.0) {
+        EXPECT_THROW(Operations::log(tokens), std::runtime_error);
+    } else {
+        auto divisor = std::log(v2);
+        if(divisor == 0.0) {
+            EXPECT_THROW(Operations::log(tokens), std::runtime_error);
+        } else {
+            auto actual = Operations::log(tokens);
+            ValueType expected = std::log(v1) / std::log(v2);
+            EXPECT_TRUE(actual.holdsAlternative<double>());
+            EXPECT_EQ(actual, expected);
+        }
+    }
+};
+
 TEST(OperationsTest, testLnInvalidShort)
 {
     std::vector<ValueType> values(0);
@@ -1042,18 +1113,6 @@ TEST(OperationsTest, testLnInvalidLong)
 {
     std::vector<ValueType> values{ValueType(0L), ValueType(0L)};
     EXPECT_THROW(Operations::ln(values), std::invalid_argument);
-}
-
-TEST(OperationsTest, testLogInvalidShort)
-{
-    std::vector<ValueType> values(0);
-    EXPECT_THROW(Operations::log(values), std::invalid_argument);
-}
-
-TEST(OperationsTest, testLogInvalidLong)
-{
-    std::vector<ValueType> values{ValueType(0L), ValueType(0L)};
-    EXPECT_THROW(Operations::log(values), std::invalid_argument);
 }
 
 TEST(OperationsTest, testExpInvalidShort)
@@ -1217,4 +1276,30 @@ TEST_P(OneValueSuite, testDegrees)
     ValueType expected = value.get<double>() * Radians_Per_Degree;
     EXPECT_TRUE(actual.holdsAlternative<double>());
     EXPECT_EQ(actual, expected);
+};
+
+TEST_P(OneValueSuite, testLogicalNot)
+{
+    auto value = GetParam();
+    std::vector<ValueType> tokens{value};
+
+    auto actual = Operations::logicalNot(tokens);
+    ValueType expected = !value.get<bool>();
+    EXPECT_TRUE(actual.holdsAlternative<bool>());
+    EXPECT_EQ(actual, expected);
+};
+
+TEST_P(OneValueSuite, testBitwiseNote)
+{
+    auto value = GetParam();
+    std::vector<ValueType> tokens{value};
+
+    if(value.holdsAlternative<double>()) {
+        EXPECT_THROW(Operations::bitwiseNot(tokens), std::runtime_error);
+    } else {
+        auto actual = Operations::bitwiseNot(tokens);
+        ValueType expected = ~value.get<int64_t>();
+        EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+        EXPECT_EQ(actual, expected);
+    }
 };
