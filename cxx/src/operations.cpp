@@ -16,6 +16,11 @@ namespace {
         return std::any_of(values.begin(), values.end(), [](auto && value) { return value.template holdsAlternative<double>(); });
     }
 
+    auto hasBool(std::span<ValueType> values) -> bool
+    {
+        return std::any_of(values.begin(), values.end(), [](auto && value) { return value.template holdsAlternative<bool>(); });
+    }
+
     auto intIfPossible(double value) -> ValueType
     {
         if(value > static_cast<double>(std::numeric_limits<int64_t>::max())) {
@@ -58,11 +63,12 @@ namespace {
         uint64_t int_a = std::bit_cast<uint64_t>(a);
         uint64_t int_b = std::bit_cast<uint64_t>(b);
 
-        // If signs are different and neither is zero, then they are far apart.
-        // This handles cases like -1.0 and +1.0
-        if (std::signbit(a) != std::signbit(b)) {
-            // Handle the specific case of -0.0 and +0.0 which are considered equal (already handled by a == b)
-            // For other cases, the distance is large.
+        if(int_a == 0L || int_b == 0L) {
+            auto distance = std::fabs(a - b);
+            return std::bit_cast<uint64_t>(distance);
+        } else if (std::signbit(a) != std::signbit(b)) {
+            // If signs are different and neither is zero, then they are far apart.
+            // This handles cases like -1.0 and +1.0
 
             // For negative numbers, the bit pattern comparison is reversed.
             // So, if a is negative, its "integer" value is larger than positive numbers with smaller magnitude.
@@ -73,10 +79,10 @@ namespace {
             if (std::signbit(b)) {
                 int_b = (uint64_t)1 << (std::numeric_limits<uint64_t>::digits - 1) - int_b;
             }
-            return static_cast<int64_t>(std::abs(static_cast<int64_t>(int_a) - static_cast<int64_t>(int_b)));
+            return std::abs(std::abs(static_cast<int64_t>(int_a) - static_cast<int64_t>(int_b)));
         }
 
-        return static_cast<int64_t>(std::abs(static_cast<int64_t>(int_a) - static_cast<int64_t>(int_b)));
+        return std::abs(std::abs(static_cast<int64_t>(int_a) - static_cast<int64_t>(int_b)));
     }
 }
 
@@ -86,6 +92,8 @@ namespace Operations {
     {
         if(values.size() != 1) {
             throw std::invalid_argument("Invalid value count; expected one");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         }
         
         return std::acos(values[0].get<double>());
@@ -95,6 +103,8 @@ namespace Operations {
     {
         if(values.size() != 1) {
             throw std::invalid_argument("Invalid value count; expected one");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         }
         
         return std::asin(values[0].get<double>());
@@ -104,6 +114,8 @@ namespace Operations {
     {
         if(values.size() != 1) {
             throw std::invalid_argument("Invalid value count; expected one");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         }
         
         return std::atan(values[0].get<double>());
@@ -113,11 +125,14 @@ namespace Operations {
     {
         if(values.size() != 1) {
             throw std::invalid_argument("Invalid value count; expected one");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         }
         
         if(hasDouble(values)) {
             return std::abs(values[0].get<double>());    
         }
+
         return std::abs(values[0].get<int64_t>());
     }
 
@@ -125,9 +140,12 @@ namespace Operations {
     {
         if(values.size() != 1) {
             throw std::invalid_argument("Invalid value count; expected one");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         } else if(!isPositive(values[0])) {
             throw std::runtime_error("Invalid parameter to ln function");
         }
+
         return std::log(values[0].get<double>());
     }
 
@@ -135,6 +153,8 @@ namespace Operations {
     {
         if(values.size() == 0 || values.size() > 2) {
             throw std::invalid_argument("Invalid value count; expected one or two");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         } else if(!isPositive(values[0])) {
             throw std::runtime_error("Invalid parameter to log function");
         }
@@ -154,6 +174,8 @@ namespace Operations {
     {
         if(values.size() != 1) {
             throw std::invalid_argument("Invalid value count; expected one");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         }
 
         return std::exp(values[0].get<double>());
@@ -163,6 +185,8 @@ namespace Operations {
     {
         if(values.size() != 1) {
             throw std::invalid_argument("Invalid value count; expected one");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         }
         
         return values[0].get<double>() * Radians_Per_Degree;
@@ -173,6 +197,7 @@ namespace Operations {
         if(values.size() != 1) {
             throw std::invalid_argument("Invalid value count; expected one");
         }
+
         return !values[0].get<bool>();
     }
 
@@ -180,9 +205,12 @@ namespace Operations {
     {
         if(values.size() != 1) {
             throw std::invalid_argument("Invalid value count; expected one");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         } else if(hasDouble(values)) {
             throw std::runtime_error("Bitwise operations not valid on doubles");
-        }   
+        }
+
         return ~values[0].get<int64_t>();
     }
 
@@ -190,6 +218,8 @@ namespace Operations {
     {
         if(values.size() != 1) {
             throw std::invalid_argument("Invalid value count; expected one");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         }
         
         return std::cos(values[0].get<double>());
@@ -199,6 +229,8 @@ namespace Operations {
     {
         if(values.size() != 1) {
             throw std::invalid_argument("Invalid value count; expected one");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         }
         
         return std::sin(values[0].get<double>());
@@ -208,6 +240,8 @@ namespace Operations {
     {
         if(values.size() != 1) {
             throw std::invalid_argument("Invalid value count; expected one");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         }
         
         return std::tan(values[0].get<double>());
@@ -217,12 +251,14 @@ namespace Operations {
     {
         if(values.size() == 0 || values.size() > 2) {
             throw std::invalid_argument("Invalid value count; expected one or two");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         } else if(values.size() == 1) {
             return intIfPossible(std::round(values[0].get<double>()));
         }
         
-        if(isZero(values[1])) {
-            throw std::runtime_error("Cannot round based on zero!");
+        if(!isPositive(values[1])) {
+            throw std::runtime_error("Cannot round based on non-positive number");
         }
 
         auto scale_factor = values[1].get<double>();    // even if it's an int64_t, we can get it as a double for the math
@@ -235,12 +271,14 @@ namespace Operations {
     {
         if(values.size() == 0 || values.size() > 2) {
             throw std::invalid_argument("Invalid value count; expected one or two");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         } else if(values.size() == 1) {
             return intIfPossible(std::floor(values[0].get<double>()));
         }
 
-        if(isZero(values[1])) {
-            throw std::runtime_error("Cannot round based on zero!");
+        if(!isPositive(values[1])) {
+            throw std::runtime_error("Cannot round based on non-positive number");
         }
 
         auto scale_factor = values[1].get<double>();    // even if it's an int64_t, we can get it as a double for the math
@@ -253,12 +291,14 @@ namespace Operations {
     {
         if(values.size() == 0 || values.size() > 2) {
             throw std::invalid_argument("Invalid value count; expected one or two");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         } else if(values.size() == 1) {
             return intIfPossible(std::ceil(values[0].get<double>()));
         }
 
-        if(isZero(values[1])) {
-            throw std::runtime_error("Cannot round based on zero!");
+        if(!isPositive(values[1])) {
+            throw std::runtime_error("Cannot round based on non-positive number");
         }
 
         auto scale_factor = values[1].get<double>();    // even if it's an int64_t, we can get it as a double for the math
@@ -271,11 +311,14 @@ namespace Operations {
     {
         if(values.size() == 0 || values.size() > 2) {
             throw std::invalid_argument("Invalid value count; expected one or two");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         } else if(values.size() == 1) {
             return (hasDouble(values) ? ValueType(values[0].get<double>()) : ValueType(values[0].get<int64_t>()));
         } else if(hasDouble(values)) {
             return values[0].get<double>() + values[1].get<double>();
         }
+
         return values[0].get<int64_t>() + values[1].get<int64_t>();
     }
 
@@ -283,11 +326,14 @@ namespace Operations {
     {
         if(values.size() == 0 || values.size() > 2) {
             throw std::invalid_argument("Invalid value count; expected one or two");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         } else if(values.size() == 1) {
             return (hasDouble(values) ? ValueType(-1.0 * values[0].get<double>()) : ValueType(-1 * values[0].get<int64_t>()));
         } else if(hasDouble(values)) {
             return values[0].get<double>() - values[1].get<double>();
         }
+
         return values[0].get<int64_t>() - values[1].get<int64_t>();
     }
 
@@ -296,6 +342,7 @@ namespace Operations {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
         }
+
         return values[0] == values[1];
     }
 
@@ -304,6 +351,7 @@ namespace Operations {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
         }
+
         return values[0] != values[1];
     }
 
@@ -312,6 +360,7 @@ namespace Operations {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
         }
+
         return values[0] <= values[1];
     }
 
@@ -320,6 +369,7 @@ namespace Operations {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
         }
+
         return values[0] >= values[1];
     }
 
@@ -328,8 +378,9 @@ namespace Operations {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
         } else if(hasDouble(values)) {
-            return ulpsDistance(values[0].get<double>(), values[1].get<double>()) <= Max_Double_Ulp_Distance;
+            return std::abs(ulpsDistance(values[0].get<double>(), values[1].get<double>())) <= Max_Double_Ulp_Distance;
         }
+
         return equals(values);
     }
 
@@ -337,9 +388,12 @@ namespace Operations {
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         } else if(hasDouble(values)) {
             return values[0].get<double>() * values[1].get<double>();
         }
+
         return values[0].get<int64_t>() * values[1].get<int64_t>();
     }
 
@@ -347,11 +401,14 @@ namespace Operations {
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         } else if(isZero(values[1])) {
             throw std::runtime_error("Divide by zero");
-        }else if(hasDouble(values)) {
+        } else if(hasDouble(values)) {
             return values[0].get<double>() / values[1].get<double>();
         }
+
         return values[0].get<int64_t>() / values[1].get<int64_t>();
     }
 
@@ -359,9 +416,12 @@ namespace Operations {
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         } else if(hasDouble(values)) {
             throw std::runtime_error("Bitwise operations not valid on doubles");
-        }        
+        }
+
         return values[0].get<int64_t>() & values[1].get<int64_t>();
     }
 
@@ -369,9 +429,12 @@ namespace Operations {
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         } else if(hasDouble(values)) {
             throw std::runtime_error("Bitwise operations not valid on doubles");
         }
+
         return values[0].get<int64_t>() | values[1].get<int64_t>();
     }
 
@@ -379,9 +442,12 @@ namespace Operations {
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         } else if(hasDouble(values)) {
             throw std::runtime_error("Bitwise operations not valid on doubles");
         }
+
         return values[0].get<int64_t>() ^ values[1].get<int64_t>();
     }
 
@@ -389,9 +455,12 @@ namespace Operations {
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         } else if(hasDouble(values)) {
             throw std::runtime_error("Bitwise operations not valid on doubles");
         }
+
         return values[0].get<int64_t>() << values[1].get<int64_t>();
     }
 
@@ -399,9 +468,12 @@ namespace Operations {
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         } else if(hasDouble(values)) {
             throw std::runtime_error("Bitwise operations not valid on doubles");
         }
+
         return values[0].get<int64_t>() >> values[1].get<int64_t>();
     }
 
@@ -409,9 +481,12 @@ namespace Operations {
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         } else if(hasDouble(values)) {
             return std::min(values[0].get<double>(), values[1].get<double>());
         }
+
         return std::min(values[0].get<int64_t>(), values[1].get<int64_t>());
     }
 
@@ -419,9 +494,12 @@ namespace Operations {
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         } else if(hasDouble(values)) {
             return std::max(values[0].get<double>(), values[1].get<double>());
         }
+
         return std::max(values[0].get<int64_t>(), values[1].get<int64_t>());
     }
 
@@ -429,6 +507,8 @@ namespace Operations {
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         } else if(isZero(values[0]) && !isPositive(values[1])) {
             throw std::runtime_error("Can't raise zero to a power less than or equal to zero");
         } else if(values[1].holdsAlternative<double>()) {
@@ -440,6 +520,7 @@ namespace Operations {
         } else if(values[0].holdsAlternative<double>()) {
             return static_cast<double>(std::pow(values[0].get<double>(), values[1].get<int64_t>()));
         }
+
         auto exp = values[1].get<int64_t>();
         return (exp < 0 ? std::pow(values[0].get<int64_t>(), exp) : intIfPossible(std::pow(values[0].get<int64_t>(), exp)));
     }
@@ -448,11 +529,14 @@ namespace Operations {
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         } else if(isZero(values[1])) {
             throw std::runtime_error("Divide by zero");
         } else if(hasDouble(values)) {
             return std::fmod(values[0].get<double>(), values[1].get<double>());
         }
+
         return static_cast<int64_t>((values[0].get<int64_t>() % values[1].get<int64_t>()));
     }
 
@@ -460,11 +544,14 @@ namespace Operations {
     {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
+        } else if(hasBool(values)) {
+            throw std::invalid_argument("Invalid operation on boolean type");
         } else if(isZero(values[1])) {
             throw std::runtime_error("Divide by zero");
         } else if(hasDouble(values)) {
             return std::remainder(values[0].get<double>(), values[1].get<double>());
         }
+
         return static_cast<int64_t>(std::remainder(values[0].get<int64_t>(), values[1].get<int64_t>()));
     }
 
@@ -473,6 +560,7 @@ namespace Operations {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
         }
+
         return values[0].get<bool>() && values[1].get<bool>();
     }
 
@@ -481,6 +569,7 @@ namespace Operations {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
         }
+
         return values[0].get<bool>() || values[1].get<bool>();
     }
 
@@ -489,6 +578,7 @@ namespace Operations {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
         }
+
         return values[0] < values[1];
     }
 
@@ -497,6 +587,7 @@ namespace Operations {
         if(values.size() != 2) {
             throw std::invalid_argument("Invalid value count; expected two");
         }
+
         return values[0] > values[1];
     }
 }

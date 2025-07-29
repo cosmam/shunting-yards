@@ -11,8 +11,17 @@ namespace {
     constexpr double tau = 2.0 * std::numbers::pi;
     constexpr double Radians_Per_Degree = tau / 360.0;
 
-    const std::vector<ValueType> All_Value_Types{ValueType(-11.2), ValueType(-1.2), ValueType(0.0), ValueType(2.1), ValueType(20.1), 
-        ValueType(-11L), ValueType(-3L), ValueType(0L), ValueType(4L), ValueType(32L), ValueType(true), ValueType(false)};
+    const std::vector<ValueType> All_Value_Types{ValueType(-11.2), ValueType(-1.2), ValueType(-1.0), ValueType(0.0), ValueType(1.0), ValueType(2.1), 
+        ValueType(20.1), ValueType(-11L), ValueType(-3L), ValueType(0L), ValueType(4L), ValueType(32L), ValueType(true), ValueType(false)};
+
+    const std::vector<ValueType> Rounding_Bases{ValueType(0.0), ValueType(-1.23e-4), ValueType(2.87e3), ValueType(-2.12e2),
+        ValueType(3.87e3), ValueType(-4e-12), ValueType(5.12e13), ValueType(-1.2e29), ValueType(2.3e32), ValueType(0L), ValueType(1L),
+        ValueType(-2L), ValueType(123L), ValueType(-12091L), ValueType(1231290L), ValueType(-120198012L), ValueType(true), ValueType(false)};
+
+    const std::vector<ValueType> Rounding_Scale{ValueType(0.0), ValueType(0L), ValueType(2.0), ValueType(2L), ValueType(3.5), ValueType(12.0),
+        ValueType(-1.2), ValueType(123.123123), ValueType(69L), ValueType(true), ValueType(false)};
+
+    const std::vector<int64_t> Double_Ulp_Distance{-5L, -4L, -3L, -1L, 0L, 1L, 3L, 4L, 5L};
 
     auto convert(std::partial_ordering ordering) -> std::string
     {
@@ -84,40 +93,49 @@ INSTANTIATE_TEST_SUITE_P(InvTrigOperationsTest,
 TEST_P(InvTrigOperationsSuite, testACos)
 {
     auto value = GetParam();
-    double input = value.get<double>();
-    double expected = std::acos(input);
 
-    std::vector<ValueType> tokens{input};
+    std::vector<ValueType> tokens{value};
 
-    auto actual = Operations::aCos(tokens);
-    EXPECT_TRUE(actual.holdsAlternative<double>());
-    EXPECT_DOUBLE_EQ(actual.get<double>(), expected);
+    if(value.holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::aCos(tokens), std::invalid_argument);
+    } else {
+        double expected = std::acos(value.get<double>());
+        auto actual = Operations::aCos(tokens);
+        EXPECT_TRUE(actual.holdsAlternative<double>());
+        EXPECT_DOUBLE_EQ(actual.get<double>(), expected);
+    }
 };
 
 TEST_P(InvTrigOperationsSuite, testASin)
 {
     auto value = GetParam();
-    double input = value.get<double>();
-    double expected = std::asin(input);
 
-    std::vector<ValueType> tokens{input};
+    std::vector<ValueType> tokens{value};
 
-    auto actual = Operations::aSin(tokens);
-    EXPECT_TRUE(actual.holdsAlternative<double>());
-    EXPECT_DOUBLE_EQ(actual.get<double>(), expected);
+    if(value.holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::aSin(tokens), std::invalid_argument);
+    } else {
+        double expected = std::asin(value.get<double>());
+        auto actual = Operations::aSin(tokens);
+        EXPECT_TRUE(actual.holdsAlternative<double>());
+        EXPECT_DOUBLE_EQ(actual.get<double>(), expected);
+    }
 };
 
 TEST_P(InvTrigOperationsSuite, testATan)
 {
     auto value = GetParam();
-    double input = value.get<double>();
-    double expected = std::atan(input);
 
-    std::vector<ValueType> tokens{input};
+    std::vector<ValueType> tokens{value};
 
-    auto actual = Operations::aTan(tokens);
-    EXPECT_TRUE(actual.holdsAlternative<double>());
-    EXPECT_DOUBLE_EQ(actual.get<double>(), expected);
+    if(value.holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::aTan(tokens), std::invalid_argument);
+    } else {
+        double expected = std::atan(value.get<double>());
+        auto actual = Operations::aTan(tokens);
+        EXPECT_TRUE(actual.holdsAlternative<double>());
+        EXPECT_DOUBLE_EQ(actual.get<double>(), expected);
+    }
 };
 
 TEST(OperationsTest, testCosInvalidShort)
@@ -166,40 +184,49 @@ INSTANTIATE_TEST_SUITE_P(TrigOperationsTest,
 TEST_P(TrigOperationsSuite, testCos)
 {
     auto value = GetParam();
-    double input = value.get<double>();
-    double expected = std::cos(input);
 
-    std::vector<ValueType> tokens{input};
+    std::vector<ValueType> tokens{value};
 
-    auto actual = Operations::cos(tokens);
-    EXPECT_TRUE(actual.holdsAlternative<double>());
-    EXPECT_DOUBLE_EQ(actual.get<double>(), expected);
+    if(value.holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::cos(tokens), std::invalid_argument);
+    } else {
+        double expected = std::cos(value.get<double>());
+        auto actual = Operations::cos(tokens);
+        EXPECT_TRUE(actual.holdsAlternative<double>());
+        EXPECT_DOUBLE_EQ(actual.get<double>(), expected);
+    }
 };
 
 TEST_P(TrigOperationsSuite, testSin)
 {
     auto value = GetParam();
-    double input = value.get<double>();
-    double expected = std::sin(input);
 
-    std::vector<ValueType> tokens{input};
+    std::vector<ValueType> tokens{value};
 
-    auto actual = Operations::sin(tokens);
-    EXPECT_TRUE(actual.holdsAlternative<double>());
-    EXPECT_DOUBLE_EQ(actual.get<double>(), expected);
+    if(value.holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::sin(tokens), std::invalid_argument);
+    } else {
+        double expected = std::sin(value.get<double>());
+        auto actual = Operations::sin(tokens);
+        EXPECT_TRUE(actual.holdsAlternative<double>());
+        EXPECT_DOUBLE_EQ(actual.get<double>(), expected);
+    }
 };
 
 TEST_P(TrigOperationsSuite, testTan)
 {
     auto value = GetParam();
-    double input = value.get<double>();
-    double expected = std::tan(input);
 
-    std::vector<ValueType> tokens{input};
+    std::vector<ValueType> tokens{value};
 
-    auto actual = Operations::tan(tokens);
-    EXPECT_TRUE(actual.holdsAlternative<double>());
-    EXPECT_DOUBLE_EQ(actual.get<double>(), expected);
+    if(value.holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::tan(tokens), std::invalid_argument);
+    } else {
+        double expected = std::tan(value.get<double>());
+        auto actual = Operations::tan(tokens);
+        EXPECT_TRUE(actual.holdsAlternative<double>());
+        EXPECT_DOUBLE_EQ(actual.get<double>(), expected);
+    }
 };
 
 TEST(OperationsTest, testAbsInvalidShort)
@@ -586,6 +613,18 @@ TEST(OperationsTest, testFloorInvalidLong)
     EXPECT_THROW(Operations::floor(values), std::invalid_argument);
 }
 
+TEST(OperationsTest, testApproximatelyEqualsShort)
+{
+    std::vector<ValueType> values(0);
+    EXPECT_THROW(Operations::approximatelyEquals(values), std::invalid_argument);
+}
+
+TEST(OperationsTest, testApproximatelyEqualsLong)
+{
+    std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
+    EXPECT_THROW(Operations::approximatelyEquals(values), std::invalid_argument);
+}
+
 class TwoValuesSuite : public ::testing::TestWithParam<std::tuple<ValueType, ValueType>> {};
 
 INSTANTIATE_TEST_SUITE_P(TwoValuesTest,
@@ -717,66 +756,81 @@ TEST_P(TwoValuesSuite, testBinaryPlus)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
-    auto actual = Operations::plus(tokens);
-    ValueType expected;
 
-    if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
-        double left = tokens.at(0).get<double>();
-        double right = tokens.at(1).get<double>();
-        expected = (left + right);
-        EXPECT_TRUE(actual.holdsAlternative<double>());
+    if(tokens.at(0).holdsAlternative<bool>() || tokens.at(1).holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::plus(tokens), std::invalid_argument);
     } else {
-        int64_t left = tokens.at(0).get<int64_t>();
-        int64_t right = tokens.at(1).get<int64_t>();
-        expected = (left + right);
-        EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+        auto actual = Operations::plus(tokens);
+        ValueType expected;
+
+        if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
+            double left = tokens.at(0).get<double>();
+            double right = tokens.at(1).get<double>();
+            expected = (left + right);
+            EXPECT_TRUE(actual.holdsAlternative<double>());
+        } else {
+            int64_t left = tokens.at(0).get<int64_t>();
+            int64_t right = tokens.at(1).get<int64_t>();
+            expected = (left + right);
+            EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+        }
+        
+        EXPECT_EQ(actual, expected);
     }
-    
-    EXPECT_EQ(actual, expected);
 };
 
 TEST_P(TwoValuesSuite, testBinaryMinus)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
-    auto actual = Operations::minus(tokens);
-    ValueType expected;
 
-    if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
-        double left = tokens.at(0).get<double>();
-        double right = tokens.at(1).get<double>();
-        expected = (left - right);
-        EXPECT_TRUE(actual.holdsAlternative<double>());
+    if(tokens.at(0).holdsAlternative<bool>() || tokens.at(1).holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::minus(tokens), std::invalid_argument);
     } else {
-        int64_t left = tokens.at(0).get<int64_t>();
-        int64_t right = tokens.at(1).get<int64_t>();
-        expected = (left - right);
-        EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+        auto actual = Operations::minus(tokens);
+        ValueType expected;
+
+        if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
+            double left = tokens.at(0).get<double>();
+            double right = tokens.at(1).get<double>();
+            expected = (left - right);
+            EXPECT_TRUE(actual.holdsAlternative<double>());
+        } else {
+            int64_t left = tokens.at(0).get<int64_t>();
+            int64_t right = tokens.at(1).get<int64_t>();
+            expected = (left - right);
+            EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+        }
+        
+        EXPECT_EQ(actual, expected);
     }
-    
-    EXPECT_EQ(actual, expected);
 };
 
 TEST_P(TwoValuesSuite, testMultiply)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
-    auto actual = Operations::multiply(tokens);
-    ValueType expected;
 
-    if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
-        double left = tokens.at(0).get<double>();
-        double right = tokens.at(1).get<double>();
-        expected = (left * right);
-        EXPECT_TRUE(actual.holdsAlternative<double>());
+    if(tokens.at(0).holdsAlternative<bool>() || tokens.at(1).holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::multiply(tokens), std::invalid_argument);
     } else {
-        int64_t left = tokens.at(0).get<int64_t>();
-        int64_t right = tokens.at(1).get<int64_t>();
-        expected = (left * right);
-        EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+        auto actual = Operations::multiply(tokens);
+        ValueType expected;
+
+        if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
+            double left = tokens.at(0).get<double>();
+            double right = tokens.at(1).get<double>();
+            expected = (left * right);
+            EXPECT_TRUE(actual.holdsAlternative<double>());
+        } else {
+            int64_t left = tokens.at(0).get<int64_t>();
+            int64_t right = tokens.at(1).get<int64_t>();
+            expected = (left * right);
+            EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+        }
+        
+        EXPECT_EQ(actual, expected);
     }
-    
-    EXPECT_EQ(actual, expected);
 };
 
 TEST_P(TwoValuesSuite, testDivision)
@@ -786,7 +840,9 @@ TEST_P(TwoValuesSuite, testDivision)
     bool error_expected = false;
     ValueType expected;
 
-    if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
+    if(tokens.at(0).holdsAlternative<bool>() || tokens.at(1).holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::divide(tokens), std::invalid_argument);
+    } else if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
         double left = tokens.at(0).get<double>();
         double right = tokens.at(1).get<double>();
 
@@ -818,8 +874,10 @@ TEST_P(TwoValuesSuite, testBitwiseAnd)
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
 
-    // for binary operations, doubles are not valid
-    if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
+    // for binary operations, doubles and bools are not valid
+    if(tokens.at(0).holdsAlternative<bool>() || tokens.at(1).holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::bitwiseAnd(tokens), std::invalid_argument);
+    } else if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
         EXPECT_THROW(Operations::bitwiseAnd(tokens), std::runtime_error);
     } else {
         auto actual = Operations::bitwiseAnd(tokens);
@@ -834,8 +892,10 @@ TEST_P(TwoValuesSuite, testBitwiseOr)
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
 
-    // for binary operations, doubles are not valid
-    if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
+    // for binary operations, doubles and bools are not valid
+    if(tokens.at(0).holdsAlternative<bool>() || tokens.at(1).holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::bitwiseOr(tokens), std::invalid_argument);
+    } else if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
         EXPECT_THROW(Operations::bitwiseOr(tokens), std::runtime_error);
     } else {
         auto actual = Operations::bitwiseOr(tokens);
@@ -850,8 +910,10 @@ TEST_P(TwoValuesSuite, testBitwiseXor)
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
 
-    // for binary operations, doubles are not valid
-    if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
+    // for binary operations, doubles and bools are not valid
+    if(tokens.at(0).holdsAlternative<bool>() || tokens.at(1).holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::bitwiseXor(tokens), std::invalid_argument);
+    } else if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
         EXPECT_THROW(Operations::bitwiseXor(tokens), std::runtime_error);
     } else {
         auto actual = Operations::bitwiseXor(tokens);
@@ -865,44 +927,54 @@ TEST_P(TwoValuesSuite, testMin)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
-    auto actual = Operations::min(tokens);
-    ValueType expected;
-
-    if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
-        double left = tokens.at(0).get<double>();
-        double right = tokens.at(1).get<double>();
-        expected = std::min(left, right);
-        EXPECT_TRUE(actual.holdsAlternative<double>());
-    } else {
-        int64_t left = tokens.at(0).get<int64_t>();
-        int64_t right = tokens.at(1).get<int64_t>();
-        expected = std::min(left, right);
-        EXPECT_TRUE(actual.holdsAlternative<int64_t>());
-    }
     
-    EXPECT_EQ(actual, expected);
+    if(tokens.at(0).holdsAlternative<bool>() || tokens.at(1).holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::min(tokens), std::invalid_argument);
+    } else {
+        auto actual = Operations::min(tokens);
+        ValueType expected;
+
+        if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
+            double left = tokens.at(0).get<double>();
+            double right = tokens.at(1).get<double>();
+            expected = std::min(left, right);
+            EXPECT_TRUE(actual.holdsAlternative<double>());
+        } else {
+            int64_t left = tokens.at(0).get<int64_t>();
+            int64_t right = tokens.at(1).get<int64_t>();
+            expected = std::min(left, right);
+            EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+        }
+        
+        EXPECT_EQ(actual, expected);
+    }
 };
 
 TEST_P(TwoValuesSuite, testMax)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
-    auto actual = Operations::max(tokens);
-    ValueType expected;
 
-    if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
-        double left = tokens.at(0).get<double>();
-        double right = tokens.at(1).get<double>();
-        expected = std::max(left, right);
-        EXPECT_TRUE(actual.holdsAlternative<double>());
+    if(tokens.at(0).holdsAlternative<bool>() || tokens.at(1).holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::max(tokens), std::invalid_argument);
     } else {
-        int64_t left = tokens.at(0).get<int64_t>();
-        int64_t right = tokens.at(1).get<int64_t>();
-        expected = std::max(left, right);
-        EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+        auto actual = Operations::max(tokens);
+        ValueType expected;
+
+        if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
+            double left = tokens.at(0).get<double>();
+            double right = tokens.at(1).get<double>();
+            expected = std::max(left, right);
+            EXPECT_TRUE(actual.holdsAlternative<double>());
+        } else {
+            int64_t left = tokens.at(0).get<int64_t>();
+            int64_t right = tokens.at(1).get<int64_t>();
+            expected = std::max(left, right);
+            EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+        }
+        
+        EXPECT_EQ(actual, expected);
     }
-    
-    EXPECT_EQ(actual, expected);
 };
 
 TEST_P(TwoValuesSuite, testLogicalAnd)
@@ -937,10 +1009,13 @@ TEST_P(TwoValuesSuite, testModulo)
 {
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
+    
     bool error_expected = false;
     ValueType expected;
 
-    if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
+    if(tokens.at(0).holdsAlternative<bool>() || tokens.at(1).holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::modulo(tokens), std::invalid_argument);
+    } else if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
         double left = tokens.at(0).get<double>();
         double right = tokens.at(1).get<double>();
 
@@ -974,7 +1049,9 @@ TEST_P(TwoValuesSuite, testRemainder)
     bool error_expected = false;
     ValueType expected;
 
-    if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
+    if(tokens.at(0).holdsAlternative<bool>() || tokens.at(1).holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::remainder(tokens), std::invalid_argument);
+    } else if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
         double left = tokens.at(0).get<double>();
         double right = tokens.at(1).get<double>();
 
@@ -1006,8 +1083,10 @@ TEST_P(TwoValuesSuite, testBitshiftLeft)
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
 
-    // for binary operations, doubles are not valid
-    if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
+    // for binary operations, doubles and bools are not valid
+    if(tokens.at(0).holdsAlternative<bool>() || tokens.at(1).holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::bitshiftLeft(tokens), std::invalid_argument);
+    } else if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
         EXPECT_THROW(Operations::bitshiftLeft(tokens), std::runtime_error);
     } else {
         auto actual = Operations::bitshiftLeft(tokens);
@@ -1022,8 +1101,10 @@ TEST_P(TwoValuesSuite, testBitshiftRight)
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
 
-    // for binary operations, doubles are not valid
-    if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
+    // for binary operations, doubles and bools are not valid
+    if(tokens.at(0).holdsAlternative<bool>() || tokens.at(1).holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::bitshiftRight(tokens), std::invalid_argument);
+    } else if(tokens.at(0).holdsAlternative<double>() || tokens.at(1).holdsAlternative<double>()) {
         EXPECT_THROW(Operations::bitshiftRight(tokens), std::runtime_error);
     } else {
         auto actual = Operations::bitshiftRight(tokens);
@@ -1038,7 +1119,9 @@ TEST_P(TwoValuesSuite, testPower)
     auto values = GetParam();
     std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
 
-    if(tokens.at(1).holdsAlternative<double>()) {
+    if(tokens.at(0).holdsAlternative<bool>() || tokens.at(1).holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::power(tokens), std::invalid_argument);
+    } else if(tokens.at(1).holdsAlternative<double>()) {
         double left = tokens.at(0).get<double>();
         double right = tokens.at(1).get<double>();
         if(left == 0.0 && right <= 0.0) {
@@ -1088,7 +1171,9 @@ TEST_P(TwoValuesSuite, testBinaryLog)
     auto v1 = tokens[0].get<double>();
     auto v2 = tokens[1].get<double>();
 
-    if(v1 <= 0.0 || v2 <= 0.0) {
+    if(tokens.at(0).holdsAlternative<bool>() || tokens.at(1).holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::log(tokens), std::invalid_argument);
+    } else if(v1 <= 0.0 || v2 <= 0.0) {
         EXPECT_THROW(Operations::log(tokens), std::runtime_error);
     } else {
         auto divisor = std::log(v2);
@@ -1173,67 +1258,86 @@ TEST_P(OneValueSuite, testUnaryPlus)
 {
     auto value = GetParam();
     std::vector<ValueType> tokens{value};
-    auto actual = Operations::plus(tokens);
-    ValueType expected;
 
-    if(value.holdsAlternative<double>()) {
-        EXPECT_TRUE(actual.holdsAlternative<double>());
-        expected = value;
+    if(value.holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::plus(tokens), std::invalid_argument);
     } else {
-        EXPECT_TRUE(actual.holdsAlternative<int64_t>());
-        expected = value;
+        auto actual = Operations::plus(tokens);
+        ValueType expected;
+
+        if(value.holdsAlternative<double>()) {
+            EXPECT_TRUE(actual.holdsAlternative<double>());
+            expected = value;
+        } else {
+            EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+            expected = value;
+        }
+        EXPECT_EQ(actual, expected);
     }
-    EXPECT_EQ(actual, expected);
 };
 
 TEST_P(OneValueSuite, testUnaryMinus)
 {
     auto value = GetParam();
     std::vector<ValueType> tokens{value};
-    auto actual = Operations::minus(tokens);
-    ValueType expected;
-
-    if(value.holdsAlternative<double>()) {
-        EXPECT_TRUE(actual.holdsAlternative<double>());
-        expected = -1.0 * value.get<double>();
+    
+    if(value.holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::minus(tokens), std::invalid_argument);
     } else {
-        EXPECT_TRUE(actual.holdsAlternative<int64_t>());
-        expected = -1 * value.get<int64_t>();
+        auto actual = Operations::minus(tokens);
+        ValueType expected;
+
+        if(value.holdsAlternative<double>()) {
+            EXPECT_TRUE(actual.holdsAlternative<double>());
+            expected = -1.0 * value.get<double>();
+        } else {
+            EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+            expected = -1 * value.get<int64_t>();
+        }
+        EXPECT_EQ(actual, expected);
     }
-    EXPECT_EQ(actual, expected);
 };
 
 TEST_P(OneValueSuite, testAbs)
 {
     auto value = GetParam();
     std::vector<ValueType> tokens{value};
-    auto actual = Operations::abs(tokens);
-    ValueType expected;
+    
+    if(value.holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::abs(tokens), std::invalid_argument);
+    } else { 
+        auto actual = Operations::abs(tokens);
+        ValueType expected;
 
-    if(value.holdsAlternative<double>()) {
-        EXPECT_TRUE(actual.holdsAlternative<double>());
-        expected = std::abs(value.get<double>());
-    } else {
-        EXPECT_TRUE(actual.holdsAlternative<int64_t>());
-        expected = std::abs(value.get<int64_t>());
+        if(value.holdsAlternative<double>()) {
+            EXPECT_TRUE(actual.holdsAlternative<double>());
+            expected = std::abs(value.get<double>());
+        } else {
+            EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+            expected = std::abs(value.get<int64_t>());
+        }
+        EXPECT_EQ(actual, expected);
     }
-    EXPECT_EQ(actual, expected);
 };
 
 TEST_P(OneValueSuite, testLn)
 {
     auto value = GetParam();
     std::vector<ValueType> tokens{value};
+    
+    if(value.holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::ln(tokens), std::invalid_argument);
+    } else { 
+        double exp = value.get<double>();
 
-    double exp = value.get<double>();
-
-    if(exp <= 0.0) {
-        EXPECT_THROW(Operations::ln(tokens), std::runtime_error);
-    } else {
-        auto actual = Operations::ln(tokens);
-        ValueType expected = std::log(exp);
-        EXPECT_TRUE(actual.holdsAlternative<double>());
-        EXPECT_EQ(actual, expected);
+        if(exp <= 0.0) {
+            EXPECT_THROW(Operations::ln(tokens), std::runtime_error);
+        } else {
+            auto actual = Operations::ln(tokens);
+            ValueType expected = std::log(exp);
+            EXPECT_TRUE(actual.holdsAlternative<double>());
+            EXPECT_EQ(actual, expected);
+        }
     }
 };
 
@@ -1241,16 +1345,20 @@ TEST_P(OneValueSuite, testUnaryLog)
 {
     auto value = GetParam();
     std::vector<ValueType> tokens{value};
+    
+    if(value.holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::log(tokens), std::invalid_argument);
+    } else { 
+        double exp = value.get<double>();
 
-    double exp = value.get<double>();
-
-    if(exp <= 0.0) {
-        EXPECT_THROW(Operations::log(tokens), std::runtime_error);
-    } else {
-        auto actual = Operations::log(tokens);
-        ValueType expected = std::log10(exp);
-        EXPECT_TRUE(actual.holdsAlternative<double>());
-        EXPECT_EQ(actual, expected);
+        if(exp <= 0.0) {
+            EXPECT_THROW(Operations::log(tokens), std::runtime_error);
+        } else {
+            auto actual = Operations::log(tokens);
+            ValueType expected = std::log10(exp);
+            EXPECT_TRUE(actual.holdsAlternative<double>());
+            EXPECT_EQ(actual, expected);
+        }
     }
 };
 
@@ -1258,24 +1366,32 @@ TEST_P(OneValueSuite, testExp)
 {
     auto value = GetParam();
     std::vector<ValueType> tokens{value};
+    
+    if(value.holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::exp(tokens), std::invalid_argument);
+    } else { 
+        double exp = value.get<double>();
 
-    double exp = value.get<double>();
-
-    auto actual = Operations::exp(tokens);
-    ValueType expected = std::exp(exp);
-    EXPECT_TRUE(actual.holdsAlternative<double>());
-    EXPECT_EQ(actual, expected);
+        auto actual = Operations::exp(tokens);
+        ValueType expected = std::exp(exp);
+        EXPECT_TRUE(actual.holdsAlternative<double>());
+        EXPECT_EQ(actual, expected);
+    }
 };
 
 TEST_P(OneValueSuite, testDegrees)
 {
     auto value = GetParam();
     std::vector<ValueType> tokens{value};
-
-    auto actual = Operations::degree(tokens);
-    ValueType expected = value.get<double>() * Radians_Per_Degree;
-    EXPECT_TRUE(actual.holdsAlternative<double>());
-    EXPECT_EQ(actual, expected);
+    
+    if(value.holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::degree(tokens), std::invalid_argument);
+    } else { 
+        auto actual = Operations::degree(tokens);
+        ValueType expected = value.get<double>() * Radians_Per_Degree;
+        EXPECT_TRUE(actual.holdsAlternative<double>());
+        EXPECT_EQ(actual, expected);
+    }
 };
 
 TEST_P(OneValueSuite, testLogicalNot)
@@ -1289,12 +1405,14 @@ TEST_P(OneValueSuite, testLogicalNot)
     EXPECT_EQ(actual, expected);
 };
 
-TEST_P(OneValueSuite, testBitwiseNote)
+TEST_P(OneValueSuite, testBitwiseNot)
 {
     auto value = GetParam();
     std::vector<ValueType> tokens{value};
-
-    if(value.holdsAlternative<double>()) {
+        
+    if(value.holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::bitwiseNot(tokens), std::invalid_argument);
+    } else if(value.holdsAlternative<double>()) {
         EXPECT_THROW(Operations::bitwiseNot(tokens), std::runtime_error);
     } else {
         auto actual = Operations::bitwiseNot(tokens);
@@ -1303,3 +1421,223 @@ TEST_P(OneValueSuite, testBitwiseNote)
         EXPECT_EQ(actual, expected);
     }
 };
+
+class RoundingOneValueSuite : public ::testing::TestWithParam<ValueType> {};
+
+INSTANTIATE_TEST_SUITE_P(RoudningOneValuesTest,
+                         RoundingOneValueSuite,
+                         testing::ValuesIn(Rounding_Bases));
+
+TEST_P(RoundingOneValueSuite, testSingleRound)
+{
+    auto value = GetParam();
+    std::vector<ValueType> tokens{value};
+
+    if(value.holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::round(tokens), std::invalid_argument);
+    } else { 
+        auto expected = std::round(value.get<double>());
+        auto actual = Operations::round(tokens);
+
+        if(expected < (double)std::numeric_limits<int64_t>::max()) {  
+            EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+            EXPECT_EQ(actual, (int64_t)expected);
+        } else {
+            EXPECT_TRUE(actual.holdsAlternative<double>());
+            EXPECT_EQ(actual, expected);
+        }
+    }
+};
+
+TEST_P(RoundingOneValueSuite, testSingleFloor)
+{
+    auto value = GetParam();
+    std::vector<ValueType> tokens{value};
+
+    if(value.holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::floor(tokens), std::invalid_argument);
+    } else { 
+        auto expected = std::floor(value.get<double>());
+        auto actual = Operations::floor(tokens);
+
+        if(expected < (double)std::numeric_limits<int64_t>::max()) {  
+            EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+            EXPECT_EQ(actual, (int64_t)expected);
+        } else {
+            EXPECT_TRUE(actual.holdsAlternative<double>());
+            EXPECT_EQ(actual, expected);
+        }
+    }
+};
+
+TEST_P(RoundingOneValueSuite, testSingleCeil)
+{
+    auto value = GetParam();
+    std::vector<ValueType> tokens{value};
+
+    if(value.holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::ceiling(tokens), std::invalid_argument);
+    } else { 
+        auto expected = std::ceil(value.get<double>());
+        auto actual = Operations::ceiling(tokens);
+
+        if(expected < (double)std::numeric_limits<int64_t>::max()) {  
+            EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+            EXPECT_EQ(actual, (int64_t)expected);
+        } else {
+            EXPECT_TRUE(actual.holdsAlternative<double>());
+            EXPECT_EQ(actual, expected);
+        }
+    }
+};
+
+TEST_P(RoundingOneValueSuite, testSelfApproximatelyEquals)
+{
+    auto value = GetParam();
+    std::vector<ValueType> tokens{value, value};
+    auto actual = Operations::approximatelyEquals(tokens);
+
+    EXPECT_TRUE(actual.holdsAlternative<bool>());
+    EXPECT_TRUE(actual.get<bool>());
+};
+
+class RoundingTwoValuesSuite : public ::testing::TestWithParam<std::tuple<ValueType, ValueType>> {};
+
+INSTANTIATE_TEST_SUITE_P(RoudningTwoValuesTest,
+                         RoundingTwoValuesSuite,
+                         testing::Combine(testing::ValuesIn(Rounding_Bases),
+                                          testing::ValuesIn(Rounding_Scale)));
+
+TEST_P(RoundingTwoValuesSuite, testRound)
+{
+    auto values = GetParam();
+    std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
+
+    if(tokens.at(0).holdsAlternative<bool>() || tokens.at(1).holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::round(tokens), std::invalid_argument);
+    } else if(tokens.at(1).get<double>() <= 0.0) {
+        EXPECT_THROW(Operations::round(tokens), std::runtime_error);
+    } else {
+        auto scale_factor = tokens.at(1).get<double>();
+        auto expected = std::round(tokens.at(0).get<double>() / scale_factor) * scale_factor;
+        auto actual = Operations::round(tokens);
+        
+        if(tokens.at(1).holdsAlternative<double>() || expected > (double)std::numeric_limits<int64_t>::max()) {  
+            EXPECT_TRUE(actual.holdsAlternative<double>());
+            EXPECT_EQ(actual, expected);
+        } else {
+            EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+            EXPECT_EQ(actual, (int64_t)expected);
+        }
+    }
+};
+
+TEST_P(RoundingTwoValuesSuite, testFloor)
+{
+    auto values = GetParam();
+    std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
+
+    if(tokens.at(0).holdsAlternative<bool>() || tokens.at(1).holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::floor(tokens), std::invalid_argument);
+    } else if(tokens.at(1).get<double>() <= 0.0) {
+        EXPECT_THROW(Operations::floor(tokens), std::runtime_error);
+    } else {
+        auto scale_factor = tokens.at(1).get<double>();
+        auto expected = std::floor(tokens.at(0).get<double>() / scale_factor) * scale_factor;
+        auto actual = Operations::floor(tokens);
+        
+        if(tokens.at(1).holdsAlternative<double>() || expected > (double)std::numeric_limits<int64_t>::max()) {  
+            EXPECT_TRUE(actual.holdsAlternative<double>());
+            EXPECT_EQ(actual, expected);
+        } else {
+            EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+            EXPECT_EQ(actual, (int64_t)expected);
+        }
+    }
+};
+
+TEST_P(RoundingTwoValuesSuite, testCeiling)
+{
+    auto values = GetParam();
+    std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
+
+    if(tokens.at(0).holdsAlternative<bool>() || tokens.at(1).holdsAlternative<bool>()) {
+        EXPECT_THROW(Operations::ceiling(tokens), std::invalid_argument);
+    } else if(tokens.at(1).get<double>() <= 0.0) {
+        EXPECT_THROW(Operations::ceiling(tokens), std::runtime_error);
+    } else {
+        auto scale_factor = tokens.at(1).get<double>();
+        auto expected = std::ceil(tokens.at(0).get<double>() / scale_factor) * scale_factor;
+        auto actual = Operations::ceiling(tokens);
+        
+        if(tokens.at(1).holdsAlternative<double>() || expected > (double)std::numeric_limits<int64_t>::max()) {  
+            EXPECT_TRUE(actual.holdsAlternative<double>());
+            EXPECT_EQ(actual, expected);
+        } else {
+            EXPECT_TRUE(actual.holdsAlternative<int64_t>());
+            EXPECT_EQ(actual, (int64_t)expected);
+        }
+    }
+};
+
+TEST_P(RoundingTwoValuesSuite, testApproximatelyEquals)
+{
+    auto values = GetParam();
+    std::vector<ValueType> tokens{std::get<0>(values), std::get<1>(values)};
+
+    ValueType expected(tokens.at(0).get<double>() == tokens.at(1).get<double>());
+    
+    auto actual = Operations::approximatelyEquals(tokens);
+    EXPECT_TRUE(actual.holdsAlternative<bool>());
+    EXPECT_EQ(actual, expected);
+};
+
+TEST(OperationsTest, testApproximatelyEqualsNan)
+{
+    ValueType val1(1.0);
+    ValueType val2(std::numeric_limits<double>::quiet_NaN());
+
+    std::vector<ValueType> v1{val1, val2};
+    std::vector<ValueType> v2{val2, val1};
+
+    auto actual1 = Operations::approximatelyEquals(v1);
+    auto actual2 = Operations::approximatelyEquals(v2);
+
+    EXPECT_TRUE(actual1.holdsAlternative<bool>());
+    EXPECT_TRUE(actual2.holdsAlternative<bool>());
+
+    EXPECT_EQ(actual1.get<bool>(), false);
+    EXPECT_EQ(actual2.get<bool>(), false);
+}
+
+class RoundingUlpSuite : public ::testing::TestWithParam<std::tuple<ValueType, int64_t>> {};
+
+INSTANTIATE_TEST_SUITE_P(RoundingUlpTest,
+                         RoundingUlpSuite,
+                         testing::Combine(testing::ValuesIn(Rounding_Bases),
+                                          testing::ValuesIn(Double_Ulp_Distance)));
+
+TEST_P(RoundingUlpSuite, testApproximatelyEquals)
+{
+    auto values = GetParam();
+    double val1 = std::get<0>(values).get<double>();
+    auto int_val1 = (int64_t)std::bit_cast<uint64_t>(val1);
+    double val2 = 0.0;
+
+    if(val1 == 0.0 && std::get<1>(values) < 0) {
+        int_val1 += std::abs(std::get<1>(values));
+        val2 = std::bit_cast<double>(int_val1);
+        val2 *= -1.0;
+    } else {
+        int_val1 += std::get<1>(values);
+        val2 = std::bit_cast<double>(int_val1);
+    }
+
+    bool expected = std::abs(std::get<1>(values)) <= 4;
+
+    std::vector<ValueType> tokens{std::get<0>(values), ValueType(val2)};
+    
+    auto actual = Operations::approximatelyEquals(tokens);
+    EXPECT_TRUE(actual.holdsAlternative<bool>());
+    EXPECT_EQ(actual, expected);
+};                                          
