@@ -92,6 +92,11 @@ auto Token::evaluate() const -> ValueType
     return convert<int64_t>(_text.cbegin(), _text.cend());
 }
 
+auto Token::evaluate(ValueLookupFunc lookup_func) -> ValueType
+{
+    return lookup_func(_text);
+}
+
 auto Token::evaluate(ValueType v1) const -> ValueType
 {
     return evaluate({v1});

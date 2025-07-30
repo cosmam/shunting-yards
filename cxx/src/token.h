@@ -9,6 +9,7 @@
 #include <variant>
 
 using CalcFunc = std::function<ValueType(std::span<ValueType>)>;
+using ValueLookupFunc = std::function<ValueType(std::string_view)>;
 
 class Token
 {
@@ -19,6 +20,7 @@ public:
         Function,
         Operator,
         Parenthesis,
+        Symbol,
         Value
     };
 
@@ -43,6 +45,8 @@ public:
     auto rightAssociative() const noexcept -> bool;
 
     auto evaluate() const -> ValueType;
+
+    auto evaluate(ValueLookupFunc lookup_func) -> ValueType;
 
     auto evaluate(ValueType v1) const -> ValueType;
 

@@ -4,6 +4,8 @@
 
 #include <algorithm>
 #include <array>
+#include <cctype>
+#include <deque>
 #include <map>
 #include <unordered_set>
 
@@ -21,6 +23,12 @@ namespace {
 
     const std::unordered_set<char> Numeric_Tokens{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'e'};
     const std::unordered_set<char> Sign_Tokens{'-', '+'};
+    const std::unordered_set<char> Additional_Symbol_Chars{'[', ']', '.', '*'};
+
+    auto validSymbolCharacter(char c) -> bool
+    {
+        return isalnum(c) || Additional_Symbol_Chars.contains(c);
+    }
 
     auto createMap() -> std::map<std::string_view, Token>
     {
@@ -123,11 +131,6 @@ namespace EquationEvaluator {
         return (pos > 0 && Sign_Tokens.contains(s.at(pos)) && s.at(pos-1) == 'e');
     }
 
-    auto setPrecedence(Token & token)
-    {
-
-    }
-
     auto tokenize(std::string_view str) -> std::vector<Token>
     {
         std::vector<Token> tokens;
@@ -138,20 +141,39 @@ namespace EquationEvaluator {
         size_t end = 0;
 
         while(start < str.size()) {
+
+            // if we didn't find anything in the last loop, there may be an unknown symbol
             if(start == prev_start) {
-                throw std::runtime_error("Unable to process rest of string");
+                while(end < str.size() && validSymbolCharacter(str.at(end))) {
+                    end++;
+                }
+                if(end > start) {
+                    tokens.push_back(Token(str.substr(start, end-start), Token::TokenType::Symbol));
+                    start = end;
+                    previous_token_valueish = true;
+                } else {
+                    throw std::runtime_error("Unable to process rest of string");
+                }
             } else {
                 prev_start = start;
             }
+
+            // gets values
             while(end < str.size() && (Numeric_Tokens.contains(str.at(end)) || isNumericSign(str, end))) {
                 end++;
             }
+
+            // add the value if we found one
             if(end > start) {
                 tokens.push_back(Token(str.substr(start, end-start), Token::TokenType::Value));
                 start = end;
                 previous_token_valueish = true;
             }
+
+            // look for additional tokens
             for(auto && name : Token_Names) {
+
+                // the token names are in a very specific order, so we can look for them directly
                 if((start + name.size()) <= str.size() && name == str.substr(start, name.size())) {
                     tokens.push_back(Tokens.at(name));
                     start += name.size();
@@ -169,4 +191,97 @@ namespace EquationEvaluator {
 
         return tokens;
     }
+
+    auto isLeftParenthesis(const Token & o2) -> bool
+    {
+        return o2.type() == Token::TokenType::Parenthesis && (o2.text() == "(");
+    }
+
+    auto popOperator(const Token & o1, const Token & o2) -> bool
+    {
+        return (!isLeftParenthesis(o2) && ((o2.precedence() > o1.precedence()) || (o2.precedence() == o1.precedence() && !o1.rightAssociative())));
+    }
+
+    void processOperator(Token token, std::deque<Token> & operator_stack, std::deque<Token> & queue)
+    {
+        while(popOperator(token, operator_stack.back())) {
+            queue.push_back(operator_stack.back());
+            operator_stack.pop_back();
+        }
+        operator_stack.push_back(token);
+    }
+
+    void processComma(Token token, std::deque<Token> & operator_stack, std::deque<Token> & queue)
+    {
+        while(!isLeftParenthesis(operator_stack.back())) {
+            queue.push_back(operator_stack.back());
+            operator_stack.pop_back();
+        }
+    }
+
+    void processRightParenthesis(std::deque<Token> & operator_stack, std::deque<Token> & queue)
+    {
+        while(!isLeftParenthesis(operator_stack.back())) {
+            queue.push_back(operator_stack.back());
+            operator_stack.pop_back();
+            if(operator_stack.empty()) {
+                throw std::runtime_error("Unbalanced left and right parenthesis");
+            }
+        }
+        operator_stack.pop_back();
+        if(operator_stack.back().type() == Token::TokenType::Function) {
+            queue.push_back(operator_stack.back());
+            operator_stack.pop_back();
+        }
+    }
+
+    // the actual shunting yard algorithm!
+    auto parseTokens(const std::vector<Token> & tokens, ValueLookupFunc value_func) -> std::deque<Token>
+    {
+        std::deque<Token> operator_stack;
+        std::deque<Token> queue;
+
+        for(auto && token : tokens) {
+            switch (token.type()) {
+                case Token::TokenType::Value:   // intentional fall-through
+                case Token::TokenType::Symbol:
+                    queue.push_back(token);
+                    break;
+                case Token::TokenType::Function:
+                    operator_stack.push_back(token);
+                    break;
+                case Token::TokenType::Operator:
+                    processOperator(token, operator_stack, queue);
+                    break;
+                case Token::TokenType::Comma:
+                    processComma(token, operator_stack, queue);
+                    break;
+                case Token::TokenType::Parenthesis:
+                    if(isLeftParenthesis(token)) {
+                        operator_stack.push_back(token);
+                    } else {
+                        processRightParenthesis(operator_stack, queue);
+                    }
+                    break;
+            }
+        }
+
+        while(!operator_stack.empty()) {
+            if(isLeftParenthesis(operator_stack.back())) {
+                throw std::runtime_error("Unbalanced left and right parenthesis");
+            }
+            queue.push_back(operator_stack.back());
+            operator_stack.pop_back();
+        }
+
+        return queue;
+    }
+
+    auto evaluate(std::string_view str, ValueLookupFunc value_func) -> ValueType
+    {
+        auto preprocessed = preprocess(str);
+        auto tokens = tokenize(preprocessed);
+        return ValueType(false);
+    }
 }
+
