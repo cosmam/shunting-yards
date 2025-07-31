@@ -343,13 +343,13 @@ TEST(OperationsTest, testPlusInvalidLong)
     EXPECT_THROW(Operations::plus(values), std::invalid_argument);
 }
 
-TEST(OperationsTest, testMinsInvalidShort)
+TEST(OperationsTest, testMinusInvalidShort)
 {
     std::vector<ValueType> values(0);
     EXPECT_THROW(Operations::minus(values), std::invalid_argument);
 }
 
-TEST(OperationsTest, testMinsInvalidLong)
+TEST(OperationsTest, testMinusInvalidLong)
 {
     std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
     EXPECT_THROW(Operations::minus(values), std::invalid_argument);
@@ -439,24 +439,12 @@ TEST(OperationsTest, testMinInvalidShort)
     EXPECT_THROW(Operations::min(values), std::invalid_argument);
 }
 
-TEST(OperationsTest, testMinInvalidLong)
-{
-    std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
-    EXPECT_THROW(Operations::min(values), std::invalid_argument);
-}
-
 TEST(OperationsTest, testMaxInvalidShort)
 {
     std::vector<ValueType> values(0);
     EXPECT_THROW(Operations::max(values), std::invalid_argument);
 
     values.push_back(ValueType(0L));
-    EXPECT_THROW(Operations::max(values), std::invalid_argument);
-}
-
-TEST(OperationsTest, testMaxInvalidLong)
-{
-    std::vector<ValueType> values{ValueType(0L), ValueType(0L), ValueType(0L)};
     EXPECT_THROW(Operations::max(values), std::invalid_argument);
 }
 

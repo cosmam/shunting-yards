@@ -17,10 +17,7 @@ public:
 
     ValueType(long value);
 
-    ValueType(bool value);
-
-    // ValueType(ValueType& other) = default;
-    // ValueType& operator=(ValueType& other) = default;
+    ValueType(bool value, bool is_break = false);
 
     template<typename T>
         requires std::same_as<T, int64_t> || std::same_as<T, double> || std::same_as<T, bool>
@@ -43,6 +40,8 @@ public:
         throw std::invalid_argument("Requested invalid type for variant");
     }
 
+    auto isBreak() const noexcept -> bool;
+
     auto operator<=>(const ValueType& other) const -> std::partial_ordering;
 
     auto operator==(const ValueType &other) const -> bool;
@@ -50,6 +49,7 @@ public:
 private:
 
     std::variant<int64_t, double, bool> _value;
+    bool _is_break = false;
 };
 
 #endif // VALUE_TYPE_H

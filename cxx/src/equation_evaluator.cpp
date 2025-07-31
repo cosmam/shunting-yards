@@ -9,8 +9,6 @@
 #include <map>
 #include <unordered_set>
 
-#include <iostream>
-
 using namespace EquationEvaluator;
 
 namespace {
@@ -30,9 +28,9 @@ namespace {
         return isalnum(c) || Additional_Symbol_Chars.contains(c);
     }
 
-    auto createMap() -> std::map<std::string_view, Token>
+    auto createMap() -> std::map<std::string, Token>
     {
-        std::map<std::string_view, Token> tokens;
+        std::map<std::string, Token> tokens;
 
         tokens.emplace(std::make_pair(Token_Names.at(0), Token(Token_Names.at(0), Token::TokenType::Parenthesis)));
         tokens.emplace(std::make_pair(Token_Names.at(1), Token(Token_Names.at(1), Token::TokenType::Parenthesis)));
@@ -95,7 +93,7 @@ namespace {
     }
 
     const std::map<std::string_view, std::array<int16_t, 2>> Variable_Precedences = createVariablePrecedences();
-    const std::map<std::string_view, Token> Tokens = createMap();
+    const std::map<std::string, Token> Tokens = createMap();
 
     auto getUnknown(Token::TokenType type) -> std::unordered_set<std::string_view>
     {
@@ -204,7 +202,7 @@ namespace EquationEvaluator {
 
     void processOperator(Token token, std::deque<Token> & operator_stack, std::deque<Token> & queue)
     {
-        while(popOperator(token, operator_stack.back())) {
+        while(!operator_stack.empty() && popOperator(token, operator_stack.back())) {
             queue.push_back(operator_stack.back());
             operator_stack.pop_back();
         }
@@ -229,18 +227,19 @@ namespace EquationEvaluator {
             }
         }
         operator_stack.pop_back();
-        if(operator_stack.back().type() == Token::TokenType::Function) {
+        if(!operator_stack.empty() && operator_stack.back().type() == Token::TokenType::Function) {
             queue.push_back(operator_stack.back());
             operator_stack.pop_back();
         }
     }
 
     // the actual shunting yard algorithm!
-    auto parseTokens(const std::vector<Token> & tokens, ValueLookupFunc value_func) -> std::deque<Token>
+    auto parseTokens(const std::vector<Token> & tokens) -> std::deque<Token>
     {
         std::deque<Token> operator_stack;
         std::deque<Token> queue;
 
+        bool prev_token_function = false;
         for(auto && token : tokens) {
             switch (token.type()) {
                 case Token::TokenType::Value:   // intentional fall-through
@@ -259,11 +258,15 @@ namespace EquationEvaluator {
                 case Token::TokenType::Parenthesis:
                     if(isLeftParenthesis(token)) {
                         operator_stack.push_back(token);
+                        if(prev_token_function) {
+                            queue.push_back(operator_stack.back());
+                        }
                     } else {
                         processRightParenthesis(operator_stack, queue);
                     }
                     break;
             }
+            prev_token_function = token.type() == Token::TokenType::Function;
         }
 
         while(!operator_stack.empty()) {
@@ -281,7 +284,43 @@ namespace EquationEvaluator {
     {
         auto preprocessed = preprocess(str);
         auto tokens = tokenize(preprocessed);
-        return ValueType(false);
+        auto queue = parseTokens(tokens);
+
+        std::vector<ValueType> stack;
+
+        for(auto && token : queue) {
+            switch (token.type()) {
+                case Token::TokenType::Parenthesis:     // I know this is weird, but it makes sense
+                case Token::TokenType::Value:
+                    stack.push_back(token.evaluate());
+                    break;
+                case Token::TokenType::Symbol:
+                    stack.push_back(token.evaluate(value_func));
+                    break;
+                case Token::TokenType::Function:
+                    {
+                        auto result = std::find_if(stack.rbegin(), stack.rend(), [](auto && t) { return t.isBreak(); });
+                        auto position = std::distance(result, stack.rend());
+                        std::span<ValueType> span(stack);
+                        auto value = token.evaluate(span.subspan(position));
+                        stack.resize(position-1);
+                        stack.push_back(value);
+                    }
+                    break;
+                case Token::TokenType::Operator:
+                    {
+                        std::span<ValueType> span(stack);
+                        auto value = token.evaluate(span.subspan(stack.size() - token.arity()));
+                        stack.resize(stack.size() - token.arity());
+                        stack.push_back(value);
+                    }
+                    break;
+                case Token::TokenType::Comma:
+                    break;  // shouldn't ever get here, and if so, just ignore it
+            }            
+        }
+
+        return stack.at(0);
     }
 }
 

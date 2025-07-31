@@ -479,28 +479,44 @@ namespace Operations {
 
     auto min(std::span<ValueType> values) -> ValueType
     {
-        if(values.size() != 2) {
-            throw std::invalid_argument("Invalid value count; expected two");
+        if(values.size() < 2) {
+            throw std::invalid_argument("Invalid value count; expected at least two");
         } else if(hasBool(values)) {
             throw std::invalid_argument("Invalid operation on boolean type");
         } else if(hasDouble(values)) {
-            return std::min(values[0].get<double>(), values[1].get<double>());
+            auto value = values[0].get<double>();
+            for(size_t i=1 ; i < values.size() ; ++i) {
+                value = std::min(value, values[i].get<double>());
+            }
+            return value;
         }
 
-        return std::min(values[0].get<int64_t>(), values[1].get<int64_t>());
+        auto value = values[0].get<int64_t>();
+        for(size_t i=1 ; i < values.size() ; ++i) {
+            value = std::min(value, values[i].get<int64_t>());
+        }
+        return value;
     }
 
     auto max(std::span<ValueType> values) -> ValueType
     {
-        if(values.size() != 2) {
-            throw std::invalid_argument("Invalid value count; expected two");
+        if(values.size() < 2) {
+            throw std::invalid_argument("Invalid value count; expected at least two");
         } else if(hasBool(values)) {
             throw std::invalid_argument("Invalid operation on boolean type");
         } else if(hasDouble(values)) {
-            return std::max(values[0].get<double>(), values[1].get<double>());
+            auto value = values[0].get<double>();
+            for(size_t i=1 ; i < values.size() ; ++i) {
+                value = std::max(value, values[i].get<double>());
+            }
+            return value;
         }
 
-        return std::max(values[0].get<int64_t>(), values[1].get<int64_t>());
+        auto value = values[0].get<int64_t>();
+        for(size_t i=1 ; i < values.size() ; ++i) {
+            value = std::max(value, values[i].get<int64_t>());
+        }
+        return value;
     }
 
     auto power(std::span<ValueType> values) -> ValueType

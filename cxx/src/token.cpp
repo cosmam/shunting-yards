@@ -85,6 +85,8 @@ auto Token::evaluate() const -> ValueType
         return true;
     } else if(_text == "false") {
         return false;
+    } else if(_text == "(") {
+        return ValueType(false, true);
     } else if(_text.contains('.') || _text.contains('e')) {
         return convert<double>(_text.cbegin(), _text.cend());
     }

@@ -9,9 +9,15 @@ ValueType::ValueType(long value)
   : _value(value)
 {}
 
-ValueType::ValueType(bool value)
-  : _value(value)
+ValueType::ValueType(bool value, bool is_break)
+  : _value(value),
+    _is_break(is_break)
 {}
+
+auto ValueType::isBreak() const noexcept -> bool
+{
+  return _is_break;
+}
 
 auto ValueType::operator<=>(const ValueType& other) const -> std::partial_ordering
 {
