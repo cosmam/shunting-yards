@@ -22,5 +22,6 @@ append_coverage_compiler_flags()
 
 set(GCOVR_ADDITIONAL_ARGS "--exclude-throw-branches")
 
+add_subdirectory(database)
 add_subdirectory(src)
 add_subdirectory(tests)
